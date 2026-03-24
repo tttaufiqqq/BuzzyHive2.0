@@ -1,0 +1,63 @@
+import React from 'react';
+import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
+
+interface TabProps {
+  tabs: { id: string; label: string; icon?: React.ReactNode }[];
+  activeTab: string;
+  onChange: (id: string) => void;
+  className?: string;
+}
+
+export const Tabs = ({ tabs, activeTab, onChange, className }: TabProps) => {
+  return (
+    <div className={cn('flex p-1 bg-yellow-100/50 rounded-2xl w-fit', className)}>
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => onChange(tab.id)}
+          className={cn(
+            'relative px-4 py-2 text-sm font-bold transition-all rounded-xl flex items-center gap-2',
+            activeTab === tab.id ? 'text-yellow-950' : 'text-amber-900/50 hover:text-amber-900'
+          )}
+        >
+          {activeTab === tab.id && (
+            <motion.div
+              layoutId="activeTab"
+              className="absolute inset-0 bg-white rounded-xl shadow-sm"
+              transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+            />
+          )}
+          <span className="relative z-10 flex items-center gap-2">
+            {tab.icon}
+            {tab.label}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+};
+
+interface BreadcrumbsProps {
+  items: { label: string; href?: string }[];
+  className?: string;
+}
+
+export const Breadcrumbs = ({ items, className }: BreadcrumbsProps) => {
+  return (
+    <nav className={cn('flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-amber-900/40', className)}>
+      {items.map((item, i) => (
+        <React.Fragment key={i}>
+          {i > 0 && <span>/</span>}
+          {item.href ? (
+            <a href={item.href} className="hover:text-yellow-600 transition-colors">
+              {item.label}
+            </a>
+          ) : (
+            <span className="text-amber-900/80">{item.label}</span>
+          )}
+        </React.Fragment>
+      ))}
+    </nav>
+  );
+};
