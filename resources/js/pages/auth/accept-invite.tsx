@@ -1,14 +1,17 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { InputError } from '@/components/core/input-error';
 import { PasswordInput } from '@/components/settings/password-input';
-import { AuthLayout } from '@/layouts/auth-layout';
+import { Bug as Bee, ArrowRight } from 'lucide-react';
+import { motion } from 'motion/react';
 
 type Props = {
     email: string;
     userId: number;
+    expires: string;
+    signature: string;
 };
 
-export default function AcceptInvite({ email, userId }: Props) {
+export default function AcceptInvite({ email, userId, expires, signature }: Props) {
     const { data, setData, post, processing, errors } = useForm({
         password: '',
         password_confirmation: '',
@@ -16,67 +19,130 @@ export default function AcceptInvite({ email, userId }: Props) {
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('invite.accept.store', { user: userId }));
+        post(route('invite.accept.store', { user: userId, expires, signature }));
     };
 
     return (
-        <AuthLayout
-            title="Set up your account"
-            description="You've been invited to BuzzyHive. Create your password to get started."
-        >
+        <div className="min-h-screen bg-[#FFFBEB] flex overflow-hidden">
             <Head title="Set Up Your Account — BuzzyHive 2.0" />
 
-            <form onSubmit={submit} className="space-y-5">
-                {/* Email — read-only */}
-                <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
-                        Email
-                    </label>
-                    <input
-                        type="email"
-                        value={email}
-                        readOnly
-                        className="w-full px-4 py-3.5 rounded-2xl border-2 border-amber-100 bg-amber-50 text-amber-900/60 font-medium cursor-not-allowed"
-                    />
-                </div>
+            {/* Left Panel - Form */}
+            <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 py-12 relative z-10">
+                {/* Logo */}
+                <Link href="/" className="flex items-center gap-2 mb-16 group w-fit">
+                    <div className="bg-yellow-400 p-2 rounded-xl group-hover:bg-yellow-500 transition-colors">
+                        <Bee className="w-5 h-5 text-yellow-950" />
+                    </div>
+                    <span className="text-lg font-black tracking-tighter uppercase text-amber-950">
+                        BuzzyHive<span className="text-yellow-500">2.0</span>
+                    </span>
+                </Link>
 
-                {/* Password */}
-                <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
-                        Password
-                    </label>
-                    <PasswordInput
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        autoFocus
-                        autoComplete="new-password"
-                        placeholder="Create a password"
-                    />
-                    <InputError message={errors.password} />
-                </div>
-
-                {/* Confirm Password */}
-                <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
-                        Confirm Password
-                    </label>
-                    <PasswordInput
-                        value={data.password_confirmation}
-                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                        autoComplete="new-password"
-                        placeholder="Confirm your password"
-                    />
-                    <InputError message={errors.password_confirmation} />
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:opacity-50 text-yellow-950 font-bold py-4 rounded-2xl transition-colors text-base"
+                <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
                 >
-                    {processing ? 'Activating...' : 'Activate Account'}
-                </button>
-            </form>
-        </AuthLayout>
+                    <div className="mb-8">
+                        <span className="bg-yellow-400 text-yellow-950 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
+                            You're Invited
+                        </span>
+                        <h1 className="text-5xl font-black uppercase tracking-tighter text-amber-950 mt-4 leading-none">
+                            Activate <br />
+                            <span className="text-yellow-500">Account.</span>
+                        </h1>
+                        <p className="text-amber-800/60 mt-3 font-medium">
+                            Create your password to get started.
+                        </p>
+                    </div>
+
+                    <form onSubmit={submit} className="space-y-5">
+                        {/* Email — read-only */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                value={email}
+                                readOnly
+                                className="w-full px-4 py-3.5 rounded-2xl border-2 border-amber-100 bg-amber-50 text-amber-900/60 font-medium cursor-not-allowed"
+                            />
+                        </div>
+
+                        {/* Password */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
+                                Password
+                            </label>
+                            <PasswordInput
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                                autoFocus
+                                autoComplete="new-password"
+                                placeholder="Create a password"
+                            />
+                            <InputError message={errors.password} />
+                        </div>
+
+                        {/* Confirm Password */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
+                                Confirm Password
+                            </label>
+                            <PasswordInput
+                                value={data.password_confirmation}
+                                onChange={(e) => setData('password_confirmation', e.target.value)}
+                                autoComplete="new-password"
+                                placeholder="Confirm your password"
+                            />
+                            <InputError message={errors.password_confirmation} />
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:opacity-50 text-yellow-950 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 group transition-colors text-lg"
+                        >
+                            {processing ? 'Activating...' : 'Activate Account'}
+                            {!processing && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+                        </button>
+                    </form>
+                </motion.div>
+            </div>
+
+            {/* Right Panel - Decorative */}
+            <div className="hidden lg:flex w-1/2 bg-amber-950 relative overflow-hidden items-center justify-center">
+                <motion.div
+                    initial={{ x: '-100%' }}
+                    animate={{ x: 0 }}
+                    transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="absolute top-0 left-0 w-24 h-full bg-[#FFFBEB] skew-x-6 -translate-x-12"
+                />
+
+                <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                    className="relative z-10 text-center px-12"
+                >
+                    <motion.div
+                        animate={{ y: [0, -12, 0] }}
+                        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+                        className="inline-block bg-yellow-400 p-8 rounded-[2rem] shadow-2xl mb-8 rotate-6"
+                    >
+                        <Bee className="w-16 h-16 text-yellow-950" />
+                    </motion.div>
+
+                    <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none mb-4">
+                        Harvest <br />
+                        <span className="text-yellow-400">Intelligence.</span>
+                    </h2>
+                    <p className="text-amber-200/60 font-medium max-w-xs mx-auto">
+                        IoT-integrated harvest readiness prediction for stingless bee farming.
+                    </p>
+                </motion.div>
+            </div>
+        </div>
     );
 }
