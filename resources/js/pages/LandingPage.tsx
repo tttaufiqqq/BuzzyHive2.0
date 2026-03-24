@@ -2,12 +2,16 @@ import { motion } from 'motion/react';
 import { Bug as Bee, ArrowRight, ShieldCheck, BarChart3, Users, Zap, Globe, Leaf } from 'lucide-react';
 import { Button } from '@/components/core/button';
 import { Link, usePage } from '@inertiajs/react';
-import React from "react";
+import React, { useState } from "react";
 import { type SharedData } from '@/types';
+import { ThesisModal } from '@/components/core/thesis-modal';
 
-export default function LandingPage() {
+type Props = { thesisUrl?: string | null };
+
+export default function LandingPage({ thesisUrl }: Props) {
   const { auth } = usePage<SharedData>().props;
   const dashboardHref = auth?.user?.role === 'admin' ? '/admin' : '/dashboard';
+  const [showThesis, setShowThesis] = useState(false);
 
   return (
     <div className="bg-[#FFFBEB] overflow-x-hidden">
@@ -39,7 +43,13 @@ export default function LandingPage() {
                   Launch Dashboard <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => thesisUrl && setShowThesis(true)}
+                disabled={!thesisUrl}
+                title={!thesisUrl ? 'No thesis uploaded yet' : undefined}
+              >
                 View Case Studies
               </Button>
             </div>
@@ -142,6 +152,15 @@ export default function LandingPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Thesis PDF Modal */}
+      {thesisUrl && (
+        <ThesisModal
+          isOpen={showThesis}
+          onClose={() => setShowThesis(false)}
+          thesisUrl={thesisUrl}
+        />
+      )}
 
       {/* Footer */}
       <footer className="bg-yellow-400 py-20 px-6 md:px-20 text-yellow-950">

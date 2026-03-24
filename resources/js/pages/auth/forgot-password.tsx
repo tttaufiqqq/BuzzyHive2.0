@@ -51,9 +51,9 @@ export default function ForgotPassword({ status }: { status?: string }) {
                             {!processing && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
                         </button>
 
-                        <p className="text-center text-sm text-amber-800/50">
+                        <p className="text-center text-sm text-amber-800/70">
                             Remember it?{' '}
-                            <TextLink href={login()}>Back to login</TextLink>
+                            <TextLink href={login()} className="text-amber-700 font-semibold decoration-amber-400 hover:text-amber-900">Back to login</TextLink>
                         </p>
                     </>
                 )}

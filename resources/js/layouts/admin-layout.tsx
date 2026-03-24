@@ -19,6 +19,11 @@ const sidebarNavItems: NavItem[] = [
         href: '/admin/beekeepers',
         icon: null,
     },
+    {
+        title: 'Thesis',
+        href: '/admin/thesis',
+        icon: null,
+    },
 ];
 
 export function AdminLayout({ children }: PropsWithChildren) {
