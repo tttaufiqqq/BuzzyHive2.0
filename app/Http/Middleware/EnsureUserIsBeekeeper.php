@@ -6,12 +6,12 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class EnsureUserIsAdmin
+class EnsureUserIsBeekeeper
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user()?->hasRole('admin')) {
-            return redirect()->route('dashboard');
+        if (! $request->user()?->hasRole('beekeeper')) {
+            return redirect()->route('admin.dashboard');
         }
 
         return $next($request);

@@ -1,10 +1,7 @@
 import { Form, Head } from '@inertiajs/react';
+import { ArrowRight } from 'lucide-react';
 import { InputError } from '@/components/core/input-error';
 import { PasswordInput } from '@/components/settings/password-input';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
 import { AuthLayout } from '@/layouts/auth-layout';
 import { update } from '@/routes/password';
 
@@ -16,75 +13,68 @@ type Props = {
 export default function ResetPassword({ token, email }: Props) {
     return (
         <AuthLayout
-            title="Reset password"
-            description="Please enter your new password below"
+            title="Reset Password"
+            description="Enter your new password below."
         >
-            <Head title="Reset password" />
+            <Head title="Reset Password — BuzzyHive 2.0" />
 
             <Form
                 {...update.form()}
                 transform={(data) => ({ ...data, token, email })}
                 resetOnSuccess={['password', 'password_confirmation']}
+                className="space-y-5"
             >
                 {({ processing, errors }) => (
-                    <div className="grid gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
+                    <>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
+                                Email
+                            </label>
+                            <input
                                 type="email"
-                                name="email"
-                                autoComplete="email"
                                 value={email}
-                                className="mt-1 block w-full"
                                 readOnly
+                                className="w-full px-4 py-3.5 rounded-2xl border-2 border-amber-100 bg-amber-50 text-amber-900/60 font-medium cursor-not-allowed"
                             />
-                            <InputError
-                                message={errors.email}
-                                className="mt-2"
-                            />
+                            <InputError message={errors.email} />
                         </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Password</Label>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
+                                New Password
+                            </label>
                             <PasswordInput
                                 id="password"
                                 name="password"
                                 autoComplete="new-password"
-                                className="mt-1 block w-full"
                                 autoFocus
-                                placeholder="Password"
+                                placeholder="Create a new password"
                             />
                             <InputError message={errors.password} />
                         </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">
-                                Confirm password
-                            </Label>
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-bold uppercase tracking-widest text-amber-900/60">
+                                Confirm Password
+                            </label>
                             <PasswordInput
                                 id="password_confirmation"
                                 name="password_confirmation"
                                 autoComplete="new-password"
-                                className="mt-1 block w-full"
-                                placeholder="Confirm password"
+                                placeholder="Confirm your new password"
                             />
-                            <InputError
-                                message={errors.password_confirmation}
-                                className="mt-2"
-                            />
+                            <InputError message={errors.password_confirmation} />
                         </div>
 
-                        <Button
+                        <button
                             type="submit"
-                            className="mt-4 w-full"
                             disabled={processing}
-                            data-test="reset-password-button"
+                            className="w-full bg-yellow-400 hover:bg-yellow-500 disabled:opacity-50 text-yellow-950 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 group transition-colors text-lg"
                         >
-                            {processing && <Spinner />}
-                            Reset password
-                        </Button>
-                    </div>
+                            {processing ? 'Resetting...' : 'Reset Password'}
+                            {!processing && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
+                        </button>
+                    </>
                 )}
             </Form>
         </AuthLayout>

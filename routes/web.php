@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => inertia('LandingPage'))->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'beekeeper'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 });
 

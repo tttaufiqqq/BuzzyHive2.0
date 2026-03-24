@@ -20,8 +20,10 @@ class AcceptInviteController extends Controller
         }
 
         return Inertia::render('auth/accept-invite', [
-            'email' => $user->email,
-            'userId' => $user->id,
+            'email'     => $user->email,
+            'userId'    => $user->id,
+            'expires'   => $request->query('expires'),
+            'signature' => $request->query('signature'),
         ]);
     }
 
@@ -41,6 +43,8 @@ class AcceptInviteController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        return redirect()->route('login')->with('status', 'Account activated! You can now sign in.');
+        auth()->login($user);
+
+        return redirect()->route('dashboard');
     }
 }
