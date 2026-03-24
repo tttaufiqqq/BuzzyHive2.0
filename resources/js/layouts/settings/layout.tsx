@@ -1,11 +1,9 @@
 import { Link } from '@inertiajs/react';
+import { motion } from 'motion/react';
 import type { PropsWithChildren } from 'react';
-import Heading from '@/components/heading';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Breadcrumbs } from '@/components/core/navigation';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn, toUrl } from '@/lib/utils';
-import { edit as editAppearance } from '@/routes/appearance';
 import { edit } from '@/routes/profile';
 import { edit as editSecurity } from '@/routes/security';
 import type { NavItem } from '@/types';
@@ -21,14 +19,9 @@ const sidebarNavItems: NavItem[] = [
         href: editSecurity(),
         icon: null,
     },
-    {
-        title: 'Appearance',
-        href: editAppearance(),
-        icon: null,
-    },
 ];
 
-export default function SettingsLayout({ children }: PropsWithChildren) {
+export function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
 
     // When server-side rendering, we only render the layout on the client...
@@ -37,46 +30,69 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     }
 
     return (
-        <div className="px-4 py-6">
-            <Heading
-                title="Settings"
-                description="Manage your profile and account settings"
-            />
+        <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
 
-            <div className="flex flex-col lg:flex-row lg:space-x-12">
-                <aside className="w-full max-w-xl lg:w-48">
+            {/* Page header — matches dashboard pattern */}
+            <div className="space-y-2">
+                <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Settings' }]} />
+                <h2 className="text-3xl font-black text-amber-950 tracking-tighter uppercase">Settings</h2>
+            </div>
+
+            <div className="flex flex-col lg:flex-row lg:gap-10">
+                <aside className="w-full lg:w-44 mb-6 lg:mb-0">
+                    {/* Mobile: horizontal tabs */}
                     <nav
-                        className="flex flex-col space-y-1 space-x-0"
+                        className="flex lg:hidden overflow-x-auto gap-1 bg-yellow-100/50 rounded-2xl p-1.5"
                         aria-label="Settings"
                     >
                         {sidebarNavItems.map((item, index) => (
-                            <Button
+                            <Link
                                 key={`${toUrl(item.href)}-${index}`}
-                                size="sm"
-                                variant="ghost"
-                                asChild
-                                className={cn('w-full justify-start', {
-                                    'bg-muted': isCurrentOrParentUrl(item.href),
-                                })}
+                                href={item.href}
+                                className={cn(
+                                    'flex-shrink-0 px-4 py-2 text-sm rounded-xl transition-all',
+                                    isCurrentOrParentUrl(item.href)
+                                        ? 'bg-white shadow-sm font-semibold text-amber-900'
+                                        : 'text-amber-900/60 hover:bg-yellow-200/50'
+                                )}
                             >
-                                <Link href={item.href}>
-                                    {item.icon && (
-                                        <item.icon className="h-4 w-4" />
-                                    )}
-                                    {item.title}
-                                </Link>
-                            </Button>
+                                {item.title}
+                            </Link>
+                        ))}
+                    </nav>
+
+                    {/* Desktop: vertical tabs */}
+                    <nav
+                        className="hidden lg:flex flex-col gap-1 bg-yellow-100/50 rounded-2xl p-1.5"
+                        aria-label="Settings"
+                    >
+                        {sidebarNavItems.map((item, index) => (
+                            <Link
+                                key={`${toUrl(item.href)}-${index}`}
+                                href={item.href}
+                                className={cn(
+                                    'px-4 py-2 text-sm rounded-xl transition-all',
+                                    isCurrentOrParentUrl(item.href)
+                                        ? 'bg-white shadow-sm font-semibold text-amber-900'
+                                        : 'text-amber-900/60 hover:bg-yellow-200/50'
+                                )}
+                            >
+                                {item.title}
+                            </Link>
                         ))}
                     </nav>
                 </aside>
 
-                <Separator className="my-6 lg:hidden" />
-
-                <div className="flex-1 md:max-w-2xl">
-                    <section className="max-w-xl space-y-12">
+                <motion.div
+                    className="flex-1 md:max-w-2xl"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                >
+                    <section className="max-w-xl space-y-8">
                         {children}
                     </section>
-                </div>
+                </motion.div>
             </div>
         </div>
     );

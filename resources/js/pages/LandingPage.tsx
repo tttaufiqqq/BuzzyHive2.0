@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Bug as Bee, ArrowRight, ShieldCheck, BarChart3, Users, Zap, Globe, Leaf } from 'lucide-react';
-import { Button } from '@/components/Button';
+import { Button } from '@/components/core/button';
 import { Link } from '@inertiajs/react';
 import React from "react";
 
