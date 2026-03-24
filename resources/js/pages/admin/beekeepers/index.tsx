@@ -1,5 +1,5 @@
-import { Head, router, useForm, usePage } from '@inertiajs/react';
-import { MoreVertical, Plus, RefreshCw, Power, Eye, Edit2 } from 'lucide-react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { MoreVertical, Plus, RefreshCw, Power, Eye, Edit2, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/core/button';
 import { Card } from '@/components/core/card';
@@ -8,8 +8,7 @@ import { Alert } from '@/components/core/feedback';
 import { Input } from '@/components/core/input';
 import { Modal } from '@/components/core/modal';
 import { AdminLayout } from '@/layouts/admin-layout';
-import type { PaginatedUsers } from '@/types';
-import type { User } from '@/types';
+import type { PaginatedUsers, User } from '@/types';
 
 type Props = {
     beekeepers: PaginatedUsers;
@@ -22,6 +21,7 @@ type ActiveModal =
     | { type: 'edit'; user: User }
     | { type: 'toggle'; user: User }
     | { type: 'resend'; user: User }
+    | { type: 'delete'; user: User }
     | null;
 
 function StatusBadge({ status }: { status: string }) {
@@ -89,6 +89,13 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
     const confirmResend = () => {
         if (activeModal?.type !== 'resend') return;
         router.post(route('admin.beekeepers.resend-invite', { user: activeModal.user.id }), {}, {
+            onSuccess: () => close(),
+        });
+    };
+
+    const confirmDelete = () => {
+        if (activeModal?.type !== 'delete') return;
+        router.delete(route('admin.beekeepers.destroy', { user: activeModal.user.id }), {
             onSuccess: () => close(),
         });
     };
@@ -180,6 +187,13 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
                                                         variant: user.status === 'active' ? 'danger' as const : 'default' as const,
                                                         onClick: () => setActiveModal({ type: 'toggle', user }),
                                                     },
+                                                    {
+                                                        id: 'delete',
+                                                        label: 'Delete',
+                                                        icon: <Trash2 className="w-4 h-4" />,
+                                                        variant: 'danger' as const,
+                                                        onClick: () => setActiveModal({ type: 'delete', user }),
+                                                    },
                                                 ]}
                                             />
                                         </td>
@@ -189,6 +203,32 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
                         </table>
                     </div>
                 </Card>
+
+                {/* Pagination */}
+                {beekeepers.last_page > 1 && (
+                    <div className="flex items-center justify-center gap-1">
+                        {beekeepers.links.map((link, i) => (
+                            link.url ? (
+                                <Link
+                                    key={i}
+                                    href={link.url}
+                                    className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                                        link.active
+                                            ? 'bg-amber-500 text-white font-semibold'
+                                            : 'text-amber-900/70 hover:bg-yellow-100'
+                                    }`}
+                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                />
+                            ) : (
+                                <span
+                                    key={i}
+                                    className="px-3 py-1.5 text-sm text-amber-900/30"
+                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                />
+                            )
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* ── Create Modal ───────────────────────────────────────── */}
@@ -319,6 +359,23 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
                                 className="flex-1"
                             >
                                 {activeModal.user.status === 'active' ? 'Deactivate' : 'Reactivate'}
+                            </Button>
+                        </div>
+                    </div>
+                </Modal>
+            )}
+
+            {/* ── Delete Confirmation Modal ───────────────────────────── */}
+            {activeModal?.type === 'delete' && (
+                <Modal isOpen onClose={close} title="Delete Beekeeper" maxWidth="sm">
+                    <div className="space-y-4">
+                        <p className="text-sm text-amber-900/70">
+                            Are you sure you want to delete <span className="font-semibold text-amber-950">{activeModal.user.name}</span>? This action cannot be undone.
+                        </p>
+                        <div className="flex gap-3">
+                            <Button type="button" variant="ghost" onClick={close} className="flex-1">Cancel</Button>
+                            <Button type="button" variant="destructive" onClick={confirmDelete} className="flex-1">
+                                Delete
                             </Button>
                         </div>
                     </div>

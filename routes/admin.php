@@ -8,11 +8,15 @@ use Inertia\Inertia;
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/', function () {
+        $stats = User::role('beekeeper')
+            ->selectRaw("COUNT(*) as total, SUM(status = 'pending') as pending, SUM(status = 'active') as active")
+            ->first();
+
         return Inertia::render('admin/dashboard', [
             'stats' => [
-                'total'   => User::role('beekeeper')->count(),
-                'pending' => User::role('beekeeper')->where('status', 'pending')->count(),
-                'active'  => User::role('beekeeper')->where('status', 'active')->count(),
+                'total'   => (int) $stats->total,
+                'pending' => (int) $stats->pending,
+                'active'  => (int) $stats->active,
             ],
         ]);
     })->name('dashboard');
@@ -22,4 +26,5 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::patch('/beekeepers/{user}', [BeekeeperController::class, 'update'])->name('beekeepers.update');
     Route::patch('/beekeepers/{user}/toggle-status', [BeekeeperController::class, 'toggleStatus'])->name('beekeepers.toggle-status');
     Route::post('/beekeepers/{user}/resend-invite', [BeekeeperController::class, 'resendInvite'])->name('beekeepers.resend-invite');
+    Route::delete('/beekeepers/{user}', [BeekeeperController::class, 'destroy'])->name('beekeepers.destroy');
 });

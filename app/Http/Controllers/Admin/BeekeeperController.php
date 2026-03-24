@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\UpdateBeekeeperRequest;
 use App\Models\User;
 use App\Notifications\BeekeeperInviteNotification;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -22,12 +23,16 @@ class BeekeeperController extends Controller
             ->orderByDesc('created_at')
             ->paginate(20);
 
+        $stats = User::role('beekeeper')
+            ->selectRaw("COUNT(*) as total, SUM(status = 'pending') as pending, SUM(status = 'active') as active")
+            ->first();
+
         return Inertia::render('admin/beekeepers/index', [
             'beekeepers' => $beekeepers,
             'stats' => [
-                'total'   => User::role('beekeeper')->count(),
-                'pending' => User::role('beekeeper')->where('status', 'pending')->count(),
-                'active'  => User::role('beekeeper')->where('status', 'active')->count(),
+                'total'   => (int) $stats->total,
+                'pending' => (int) $stats->pending,
+                'active'  => (int) $stats->active,
             ],
         ]);
     }
@@ -59,6 +64,8 @@ class BeekeeperController extends Controller
 
     public function update(UpdateBeekeeperRequest $request, User $user): RedirectResponse
     {
+        abort_if(! $user->hasRole('beekeeper'), 403);
+
         $user->update($request->only(['name', 'email', 'phone']));
 
         return redirect()->route('admin.beekeepers.index')
@@ -67,6 +74,8 @@ class BeekeeperController extends Controller
 
     public function toggleStatus(User $user): RedirectResponse
     {
+        abort_if(! $user->hasRole('beekeeper'), 403);
+
         $user->update([
             'status' => $user->isActive() ? 'deactivated' : 'active',
         ]);
@@ -77,8 +86,20 @@ class BeekeeperController extends Controller
             ->with('success', "Beekeeper {$action}.");
     }
 
-    public function resendInvite(User $user): RedirectResponse
+    public function destroy(User $user): RedirectResponse
     {
+        abort_if(! $user->hasRole('beekeeper'), 403);
+
+        $user->delete();
+
+        return redirect()->route('admin.beekeepers.index')
+            ->with('success', 'Beekeeper deleted.');
+    }
+
+    public function resendInvite(Request $request, User $user): RedirectResponse
+    {
+        abort_if(! $user->hasRole('beekeeper'), 403);
+
         if (! $user->isPending()) {
             return redirect()->route('admin.beekeepers.index')
                 ->with('error', 'Invite can only be resent to pending users.');
@@ -90,8 +111,7 @@ class BeekeeperController extends Controller
             ['user' => $user->id]
         );
 
-        $admin = request()->user();
-        $user->notify(new BeekeeperInviteNotification($inviteUrl, $admin->name));
+        $user->notify(new BeekeeperInviteNotification($inviteUrl, $request->user()->name));
 
         return redirect()->route('admin.beekeepers.index')
             ->with('success', "Invite resent to {$user->email}.");

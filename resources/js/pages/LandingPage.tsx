@@ -1,10 +1,14 @@
 import { motion } from 'motion/react';
 import { Bug as Bee, ArrowRight, ShieldCheck, BarChart3, Users, Zap, Globe, Leaf } from 'lucide-react';
 import { Button } from '@/components/core/button';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import React from "react";
+import { type SharedData } from '@/types';
 
 export default function LandingPage() {
+  const { auth } = usePage<SharedData>().props;
+  const dashboardHref = auth?.user?.role === 'admin' ? '/admin' : '/dashboard';
+
   return (
     <div className="bg-[#FFFBEB] overflow-x-hidden">
       {/* Section 1: Editorial Hero (Beekeeper Focus) */}
@@ -30,7 +34,7 @@ export default function LandingPage() {
                 Optimizing kelulut farming through an IoT-integrated Business Intelligence platform that leverages multi-gas sensing and historical pattern analysis to predict honey harvest readiness.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link href="/dashboard">
+              <Link href={dashboardHref}>
                 <Button size="lg" className="group">
                   Launch Dashboard <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
@@ -151,7 +155,7 @@ export default function LandingPage() {
               IoT-integrated harvest readiness prediction for stingless bee farming.
             </p>
             <div className="flex gap-4">
-              <Link href="/dashboard">
+              <Link href={dashboardHref}>
                 <Button className="bg-yellow-950 text-yellow-400 hover:bg-black">Get Started</Button>
               </Link>
             </div>
