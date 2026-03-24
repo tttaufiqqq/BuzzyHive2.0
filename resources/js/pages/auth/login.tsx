@@ -132,16 +132,6 @@ export default function Login({ status, canResetPassword }: { status?: string; c
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </button>
 
-                        {/* Register link */}
-                        <p className="text-center text-sm text-amber-800/60 font-medium">
-                            Don't have an account?{' '}
-                            <Link
-                                href="/register"
-                                className="text-amber-900 font-bold hover:text-yellow-600 underline underline-offset-2"
-                            >
-                                Register here
-                            </Link>
-                        </p>
                     </form>
                 </motion.div>
             </div>

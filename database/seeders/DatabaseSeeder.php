@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'beekeeper', 'guard_name' => 'web']);
 
         $admin = User::firstOrCreate(
             ['email' => 'admin@buzzyhive.com'],
@@ -21,6 +22,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Admin',
                 'password' => bcrypt('password'),
                 'email_verified_at' => now(),
+                'status' => 'active',
             ]
         );
 
