@@ -12,6 +12,7 @@ const sidebarNavItems: NavItem[] = [
         title: 'Dashboard',
         href: '/admin',
         icon: null,
+        exact: true,
     },
     {
         title: 'Beekeepers',
@@ -21,7 +22,8 @@ const sidebarNavItems: NavItem[] = [
 ];
 
 export function AdminLayout({ children }: PropsWithChildren) {
-    const { isCurrentOrParentUrl } = useCurrentUrl();
+    const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
+    const isActive = (item: NavItem) => item.exact ? isCurrentUrl(item.href) : isCurrentOrParentUrl(item.href);
 
     if (typeof window === 'undefined') {
         return null;
@@ -50,7 +52,7 @@ export function AdminLayout({ children }: PropsWithChildren) {
                                     href={item.href}
                                     className={cn(
                                         'flex-shrink-0 px-4 py-2 text-sm rounded-xl transition-all',
-                                        isCurrentOrParentUrl(item.href)
+                                        isActive(item)
                                             ? 'bg-white shadow-sm font-semibold text-amber-900'
                                             : 'text-amber-900/60 hover:bg-yellow-200/50'
                                     )}
@@ -71,7 +73,7 @@ export function AdminLayout({ children }: PropsWithChildren) {
                                     href={item.href}
                                     className={cn(
                                         'px-4 py-2 text-sm rounded-xl transition-all',
-                                        isCurrentOrParentUrl(item.href)
+                                        isActive(item)
                                             ? 'bg-white shadow-sm font-semibold text-amber-900'
                                             : 'text-amber-900/60 hover:bg-yellow-200/50'
                                     )}

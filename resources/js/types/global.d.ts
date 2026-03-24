@@ -1,4 +1,12 @@
+import type { route as routeFn } from 'ziggy-js';
 import type { Auth } from '@/types/auth';
+
+declare global {
+    const route: typeof routeFn;
+    interface Window {
+        route: typeof routeFn;
+    }
+}
 
 declare module '@inertiajs/core' {
     export interface InertiaConfig {

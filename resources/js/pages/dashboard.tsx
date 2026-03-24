@@ -164,7 +164,6 @@ export default function Dashboard() {
                                                     trigger={
                                                         <button
                                                             className="p-2 hover:bg-yellow-100 rounded-lg transition-colors"
-                                                            onClick={(e) => e.stopPropagation()}
                                                         >
                                                             <MoreVertical className="w-4 h-4 text-amber-900/40" />
                                                         </button>
