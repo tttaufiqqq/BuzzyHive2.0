@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BeekeeperController;
+use App\Http\Controllers\Admin\ThesisController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,4 +28,8 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::patch('/beekeepers/{user}/toggle-status', [BeekeeperController::class, 'toggleStatus'])->name('beekeepers.toggle-status');
     Route::post('/beekeepers/{user}/resend-invite', [BeekeeperController::class, 'resendInvite'])->name('beekeepers.resend-invite');
     Route::delete('/beekeepers/{user}', [BeekeeperController::class, 'destroy'])->name('beekeepers.destroy');
+
+    Route::get('/thesis', [ThesisController::class, 'index'])->name('thesis');
+    Route::post('/thesis', [ThesisController::class, 'upload'])->name('thesis.upload');
+    Route::delete('/thesis', [ThesisController::class, 'destroy'])->name('thesis.destroy');
 });
