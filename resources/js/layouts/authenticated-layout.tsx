@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import { Bug as Bee, LayoutDashboard, Settings, Bell, User, LogOut, Shield, CreditCard, Home } from 'lucide-react';
+import { Bug as Bee, LayoutDashboard, Settings, Bell, User, LogOut, Shield, CreditCard, Home, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
 import { Dropdown } from '@/components/core/dropdown';
@@ -14,20 +14,23 @@ interface PageProps {
     auth: {
         user: {
             name: string;
+            role?: string;
         };
     };
     [key: string]: unknown;
 }
 
-const navItems = [
-    { icon: Home,            label: 'Home',      routeName: 'home' },
-    { icon: LayoutDashboard, label: 'Dashboard', routeName: 'dashboard' },
-    { icon: Settings,        label: 'Settings',  routeName: 'profile.edit' },
-];
-
 export function AuthenticatedLayout({ header = null, children }: AuthenticatedLayoutProps) {
     const { auth } = usePage<PageProps>().props;
     const user = auth.user;
+    const isAdmin = user?.role === 'admin';
+
+    const navItems = [
+        { icon: Home,            label: 'Home',      routeName: 'home' },
+        { icon: LayoutDashboard, label: 'Dashboard', routeName: 'dashboard' },
+        ...(isAdmin ? [{ icon: Users, label: 'Admin', routeName: 'admin.dashboard' }] : []),
+        { icon: Settings,        label: 'Settings',  routeName: 'profile.edit' },
+    ];
 
     const userMenuItems = [
         { id: 'profile',  label: 'My Profile', icon: <User className="w-4 h-4" />,       onClick: () => router.visit(route('profile.edit')) },
