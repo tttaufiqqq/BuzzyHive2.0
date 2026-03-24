@@ -1,4 +1,4 @@
-import InputError from '@/components/input-error';
+import { InputError } from '@/components/core/input-error';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Bug as Bee, ArrowRight, Lock, Mail } from 'lucide-react';
 import { motion } from 'motion/react';

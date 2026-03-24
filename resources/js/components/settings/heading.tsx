@@ -1,4 +1,4 @@
-export default function Heading({
+export function Heading({
     title,
     description,
     variant = 'default',
@@ -12,14 +12,14 @@ export default function Heading({
             <h2
                 className={
                     variant === 'small'
-                        ? 'mb-0.5 text-base font-medium'
-                        : 'text-xl font-semibold tracking-tight'
+                        ? 'mb-0.5 text-base font-bold text-amber-900'
+                        : 'text-xl font-black text-amber-950 tracking-tight'
                 }
             >
                 {title}
             </h2>
             {description && (
-                <p className="text-sm text-muted-foreground">{description}</p>
+                <p className="text-sm text-amber-600/60">{description}</p>
             )}
         </header>
     );

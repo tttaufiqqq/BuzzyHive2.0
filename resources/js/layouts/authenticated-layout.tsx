@@ -3,7 +3,7 @@ import { Link, router, usePage } from '@inertiajs/react';
 import { Bug as Bee, LayoutDashboard, Settings, Bell, User, LogOut, Shield, CreditCard, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
-import { Dropdown } from '@/components/Dropdown';
+import { Dropdown } from '@/components/core/dropdown';
 
 interface AuthenticatedLayoutProps {
     header?: React.ReactNode;
@@ -25,7 +25,7 @@ const navItems = [
     { icon: Settings,        label: 'Settings',  routeName: 'profile.edit' },
 ];
 
-export default function AuthenticatedLayout({ header = null, children }: AuthenticatedLayoutProps) {
+export function AuthenticatedLayout({ header = null, children }: AuthenticatedLayoutProps) {
     const { auth } = usePage<PageProps>().props;
     const user = auth.user;
 

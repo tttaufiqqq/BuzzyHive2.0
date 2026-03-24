@@ -1,20 +1,20 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bug as Bee, Plus, Activity, Weight, Calendar, MapPin, Info, Sparkles, Droplets, LayoutDashboard, History, Settings as SettingsIcon, BarChart3 } from 'lucide-react';
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { Input } from '@/components/Input';
+import { Button } from '@/components/core/button';
+import { Card } from '@/components/core/card';
+import { Input } from '@/components/core/input';
 import type { HiveData } from '@/types';
 import { cn } from '@/lib/utils';
 import Markdown from 'react-markdown';
-import { Tabs, Breadcrumbs } from '@/components/Navigation';
-import { Alert, Progress } from '@/components/Feedback';
-import { HiveChart, DataTable, Accordion } from '@/components/Content';
-import { Dropdown } from '@/components/Dropdown';
+import { Tabs, Breadcrumbs } from '@/components/core/navigation';
+import { Alert, Progress } from '@/components/core/feedback';
+import { HiveChart, DataTable, Accordion } from '@/components/core/content';
+import { Dropdown } from '@/components/core/dropdown';
 import { MoreVertical, Edit2, Trash2, Download, Share2 } from 'lucide-react';
 import React from 'react';
-import { Modal } from '@/components/Modal';
-import AuthenticatedLayout from '@/layouts/AuthenticatedLayout';
+import { Modal } from '@/components/core/modal';
+import { AuthenticatedLayout } from '@/layouts/authenticated-layout';
 import { Head } from '@inertiajs/react';
 
 interface PredictionResult {

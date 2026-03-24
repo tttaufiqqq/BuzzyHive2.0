@@ -1,10 +1,10 @@
 import { Eye, EyeOff } from 'lucide-react';
 import type { ComponentProps, Ref } from 'react';
 import { useState } from 'react';
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/core/input';
 import { cn } from '@/lib/utils';
 
-export default function PasswordInput({
+export function PasswordInput({
     className,
     ref,
     ...props
@@ -22,7 +22,7 @@ export default function PasswordInput({
             <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-3 text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none"
+                className="absolute inset-y-0 right-0 flex items-center rounded-r-2xl px-3 text-amber-900/40 hover:text-amber-900 focus-visible:ring-[3px] focus-visible:ring-yellow-400/50 focus-visible:outline-none"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 tabIndex={-1}
             >
