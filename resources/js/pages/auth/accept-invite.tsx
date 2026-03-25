@@ -2,7 +2,6 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { InputError } from '@/components/core/input-error';
 import { PasswordInput } from '@/components/settings/password-input';
 import { Bug as Bee, ArrowRight } from 'lucide-react';
-import { motion } from 'motion/react';
 
 type Props = {
     email: string;
@@ -23,8 +22,10 @@ export default function AcceptInvite({ email, userId, expires, signature }: Prop
     };
 
     return (
-        <div className="min-h-screen bg-[#FFFBEB] flex overflow-hidden">
+        <div className="min-h-screen bg-[#FFFBEB] relative flex overflow-hidden">
             <Head title="Set Up Your Account — BuzzyHive 2.0" />
+
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-amber-950 -skew-x-12 translate-x-1/4 z-0 hidden lg:block" />
 
             {/* Left Panel - Form */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 py-12 relative z-10">
@@ -38,11 +39,7 @@ export default function AcceptInvite({ email, userId, expires, signature }: Prop
                     </span>
                 </Link>
 
-                <motion.div
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
+                <div>
                     <div className="mb-8">
                         <span className="bg-yellow-400 text-yellow-950 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest">
                             You're Invited
@@ -108,31 +105,15 @@ export default function AcceptInvite({ email, userId, expires, signature }: Prop
                             {!processing && <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />}
                         </button>
                     </form>
-                </motion.div>
+                </div>
             </div>
 
             {/* Right Panel - Decorative */}
-            <div className="hidden lg:flex w-1/2 bg-amber-950 relative overflow-hidden items-center justify-center">
-                <motion.div
-                    initial={{ x: '-100%' }}
-                    animate={{ x: 0 }}
-                    transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    className="absolute top-0 left-0 w-24 h-full bg-[#FFFBEB] skew-x-6 -translate-x-12"
-                />
-
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className="relative z-10 text-center px-12"
-                >
-                    <motion.div
-                        animate={{ y: [0, -12, 0] }}
-                        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-                        className="inline-block bg-yellow-400 p-8 rounded-[2rem] shadow-2xl mb-8 rotate-6"
-                    >
+            <div className="hidden lg:flex w-1/2 relative z-10 items-center justify-center">
+                <div className="text-center px-12">
+                    <div className="inline-block bg-yellow-400 p-8 rounded-[2rem] shadow-2xl mb-8 rotate-6">
                         <Bee className="w-16 h-16 text-yellow-950" />
-                    </motion.div>
+                    </div>
 
                     <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none mb-4">
                         Harvest <br />
@@ -141,7 +122,7 @@ export default function AcceptInvite({ email, userId, expires, signature }: Prop
                     <p className="text-amber-200/60 font-medium max-w-xs mx-auto">
                         IoT-integrated harvest readiness prediction for stingless bee farming.
                     </p>
-                </motion.div>
+                </div>
             </div>
         </div>
     );

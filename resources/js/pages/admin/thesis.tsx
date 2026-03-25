@@ -4,6 +4,7 @@ import { Upload, FileText, Trash2, ExternalLink, CheckCircle } from 'lucide-reac
 import { Button } from '@/components/core/button';
 import { Card } from '@/components/core/card';
 import { Alert } from '@/components/core/feedback';
+import { Modal } from '@/components/core/modal';
 import { AdminLayout } from '@/layouts/admin-layout';
 
 type Props = {
@@ -19,6 +20,8 @@ export default function ThesisPage({ thesisUrl, uploadedAt }: Props) {
     const [dragging, setDragging] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
+    const [showRemoveModal, setShowRemoveModal] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     function handleFile(file: File | null) {
         if (!file) return;
@@ -49,9 +52,14 @@ export default function ThesisPage({ thesisUrl, uploadedAt }: Props) {
         });
     }
 
-    function handleRemove() {
-        if (!confirm('Remove the uploaded thesis? Visitors will no longer be able to view it.')) return;
-        router.delete('/admin/thesis');
+    function confirmRemove() {
+        setDeleting(true);
+        router.delete('/admin/thesis', {
+            onFinish: () => {
+                setDeleting(false);
+                setShowRemoveModal(false);
+            },
+        });
     }
 
     return (
@@ -89,7 +97,7 @@ export default function ThesisPage({ thesisUrl, uploadedAt }: Props) {
                                         <ExternalLink className="w-3.5 h-3.5" />
                                         Preview PDF
                                     </a>
-                                    <Button variant="destructive" size="sm" onClick={handleRemove}>
+                                    <Button variant="destructive" size="sm" onClick={() => setShowRemoveModal(true)}>
                                         <Trash2 className="w-3.5 h-3.5 mr-1.5" />
                                         Remove
                                     </Button>
@@ -174,6 +182,21 @@ export default function ThesisPage({ thesisUrl, uploadedAt }: Props) {
                     )}
                 </Card>
             </div>
+            <Modal isOpen={showRemoveModal} onClose={() => setShowRemoveModal(false)} title="Remove Thesis" maxWidth="sm">
+                <div className="space-y-4">
+                    <p className="text-sm text-amber-900/70">
+                        Are you sure you want to remove the uploaded thesis? Visitors will no longer be able to view it.
+                    </p>
+                    <div className="flex gap-3">
+                        <Button type="button" variant="ghost" onClick={() => setShowRemoveModal(false)} disabled={deleting} className="flex-1">
+                            Cancel
+                        </Button>
+                        <Button type="button" variant="destructive" onClick={confirmRemove} disabled={deleting} className="flex-1">
+                            {deleting ? 'Deleting...' : 'Remove'}
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
         </AdminLayout>
     );
 }
