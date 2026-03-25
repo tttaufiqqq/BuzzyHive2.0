@@ -47,7 +47,7 @@ export function AuthenticatedLayout({ header = null, children }: AuthenticatedLa
                 <div className="max-w-6xl mx-auto flex justify-between items-center">
 
                     {/* Logo */}
-                    <Link href={route('dashboard')} className="flex items-center gap-2">
+                    <Link href="/" className="flex items-center gap-2">
                         <div className="bg-yellow-400 p-2 rounded-xl">
                             <Bee className="w-6 h-6 text-yellow-950" />
                         </div>

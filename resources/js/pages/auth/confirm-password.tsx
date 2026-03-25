@@ -6,8 +6,10 @@ import { store } from '@/routes/password/confirm';
 
 export default function ConfirmPassword() {
     return (
-        <div className="min-h-screen bg-[#FFFBEB] flex overflow-hidden">
+        <div className="min-h-screen bg-[#FFFBEB] relative flex overflow-hidden">
             <Head title="Confirm Password — BuzzyHive2.0" />
+
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-yellow-400 -skew-x-12 translate-x-1/4 z-0 hidden lg:block" />
 
             {/* Left Panel - Form */}
             <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 md:px-16 py-12 relative z-10">
@@ -75,50 +77,15 @@ export default function ConfirmPassword() {
                 </motion.div>
             </div>
 
-            {/* Right Panel - Decorative */}
-            <div className="hidden lg:flex w-1/2 bg-amber-950 relative overflow-hidden items-center justify-center">
-                <motion.div
-                    initial={{ x: '-100%' }}
-                    animate={{ x: 0 }}
-                    transition={{ duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    className="absolute top-0 left-0 w-24 h-full bg-[#FFFBEB] skew-x-6 -translate-x-12"
-                />
-
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                    className="relative z-10 text-center px-12"
-                >
-                    <motion.div
-                        animate={{ y: [0, -12, 0] }}
-                        transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
-                        className="inline-block bg-yellow-400 p-8 rounded-[2rem] shadow-2xl mb-8 rotate-6"
-                    >
-                        <Bee className="w-16 h-16 text-yellow-950" />
-                    </motion.div>
-
-                    <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none mb-4">
-                        Harvest <br />
-                        <span className="text-yellow-400">Smarter.</span>
-                    </h2>
-                    <p className="text-amber-100/50 font-medium max-w-xs mx-auto">
-                        AI-powered predictions for the perfect stingless bee honey harvest.
-                    </p>
-
-                    <div className="flex gap-8 justify-center mt-12">
-                        <div className="text-center">
-                            <span className="block text-3xl font-black text-yellow-400">98%</span>
-                            <span className="text-xs uppercase tracking-widest text-amber-100/40 font-bold">Accuracy</span>
-                        </div>
-                        <div className="w-px bg-amber-800" />
-                        <div className="text-center">
-                            <span className="block text-3xl font-black text-yellow-400">24/7</span>
-                            <span className="text-xs uppercase tracking-widest text-amber-100/40 font-bold">Monitoring</span>
-                        </div>
-                    </div>
-                </motion.div>
-            </div>
+            <motion.div
+                animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute top-1/4 right-1/4 hidden lg:block z-10"
+            >
+                <div className="bg-white p-6 rounded-3xl shadow-2xl border border-yellow-100 rotate-12">
+                    <Bee className="w-16 h-16 text-yellow-500" />
+                </div>
+            </motion.div>
         </div>
     );
 }
