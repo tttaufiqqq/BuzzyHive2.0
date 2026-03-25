@@ -12,7 +12,7 @@ class UpdateBeekeeperRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->hasRole('admin');
     }
 
     /**
@@ -25,9 +25,9 @@ class UpdateBeekeeperRequest extends FormRequest
         $userId = $this->route('user')?->id;
 
         return [
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', "unique:users,email,{$userId}"],
-            'phone' => ['nullable', 'string', 'max:20'],
+            'name'  => ['required', 'string', 'min:2', 'max:255', 'regex:/^[\pL\s\'\-\.]+$/u'],
+            'email' => ['required', 'email:rfc', 'max:255', "unique:users,email,{$userId}"],
+            'phone' => ['nullable', 'string', 'regex:/^(\+?60|0)[0-9\-\s]{8,14}$/'],
         ];
     }
 }

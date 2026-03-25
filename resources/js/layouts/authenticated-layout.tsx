@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import { Bug as Bee, LayoutDashboard, Settings, Bell, User, LogOut, Shield, CreditCard, Home, Users } from 'lucide-react';
+import { Bug as Bee, LayoutDashboard, Settings, User, LogOut, Home, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
 import { Dropdown } from '@/components/core/dropdown';
@@ -33,10 +33,8 @@ export function AuthenticatedLayout({ header = null, children }: AuthenticatedLa
     ];
 
     const userMenuItems = [
-        { id: 'profile',  label: 'My Profile', icon: <User className="w-4 h-4" />,       onClick: () => router.visit(route('profile.edit')) },
-        { id: 'security', label: 'Security',   icon: <Shield className="w-4 h-4" />,     onClick: () => {} },
-        { id: 'billing',  label: 'Billing',    icon: <CreditCard className="w-4 h-4" />, onClick: () => {} },
-        { id: 'logout',   label: 'Sign Out',   icon: <LogOut className="w-4 h-4" />,     variant: 'danger' as const, onClick: () => router.post(route('logout')) },
+        { id: 'profile', label: 'My Profile', icon: <User className="w-4 h-4" />,   onClick: () => router.visit(route('profile.edit')) },
+        { id: 'logout',  label: 'Sign Out',  icon: <LogOut className="w-4 h-4" />, variant: 'danger' as const, onClick: () => router.post(route('logout')) },
     ];
 
     return (
@@ -58,11 +56,6 @@ export function AuthenticatedLayout({ header = null, children }: AuthenticatedLa
 
                     {/* Right actions */}
                     <div className="flex items-center gap-4">
-                        <button className="p-2 hover:bg-yellow-100 rounded-full transition-colors relative">
-                            <Bell className="w-5 h-5 text-amber-900" />
-                            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-                        </button>
-
                         <Dropdown
                             trigger={
                                 <button className="flex items-center gap-2 p-1 pr-3 hover:bg-yellow-100 rounded-full transition-colors border border-yellow-100">

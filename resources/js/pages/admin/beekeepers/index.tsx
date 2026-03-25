@@ -51,6 +51,7 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
     const flash = props.flash;
 
     const [activeModal, setActiveModal] = useState<ActiveModal>(null);
+    const [deleting, setDeleting] = useState(false);
     const close = () => setActiveModal(null);
 
     // Create form
@@ -66,6 +67,22 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
 
     const submitCreate = (e: React.FormEvent) => {
         e.preventDefault();
+
+        const errors: Record<string, string> = {};
+        if (!createForm.data.name.trim() || createForm.data.name.trim().length < 2)
+            errors.name = 'Name must be at least 2 characters.';
+        else if (!/^[\p{L}\s'\-.]+$/u.test(createForm.data.name.trim()))
+            errors.name = 'Name must contain letters only.';
+        if (!/^[\w.%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}$/.test(createForm.data.email))
+            errors.email = 'Enter a valid email address.';
+        if (createForm.data.phone && !/^(\+?60|0)[0-9\-\s]{8,14}$/.test(createForm.data.phone))
+            errors.phone = 'Use Malaysian format e.g. 012-345 6789';
+
+        if (Object.keys(errors).length > 0) {
+            createForm.setError(errors as never);
+            return;
+        }
+
         createForm.post(route('admin.beekeepers.store'), {
             onSuccess: () => { createForm.reset(); close(); },
         });
@@ -74,6 +91,22 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
     const submitEdit = (e: React.FormEvent) => {
         e.preventDefault();
         if (activeModal?.type !== 'edit') return;
+
+        const errors: Record<string, string> = {};
+        if (!editForm.data.name.trim() || editForm.data.name.trim().length < 2)
+            errors.name = 'Name must be at least 2 characters.';
+        else if (!/^[\p{L}\s'\-.]+$/u.test(editForm.data.name.trim()))
+            errors.name = 'Name must contain letters only.';
+        if (!/^[\w.%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}$/.test(editForm.data.email))
+            errors.email = 'Enter a valid email address.';
+        if (editForm.data.phone && !/^(\+?60|0)[0-9\-\s]{8,14}$/.test(editForm.data.phone))
+            errors.phone = 'Use Malaysian format e.g. 012-345 6789';
+
+        if (Object.keys(errors).length > 0) {
+            editForm.setError(errors as never);
+            return;
+        }
+
         editForm.patch(route('admin.beekeepers.update', { user: activeModal.user.id }), {
             onSuccess: () => close(),
         });
@@ -95,8 +128,12 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
 
     const confirmDelete = () => {
         if (activeModal?.type !== 'delete') return;
+        setDeleting(true);
         router.delete(route('admin.beekeepers.destroy', { user: activeModal.user.id }), {
-            onSuccess: () => close(),
+            onFinish: () => {
+                setDeleting(false);
+                close();
+            },
         });
     };
 
@@ -254,7 +291,7 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
                         label="Phone (optional)"
                         type="tel"
                         value={createForm.data.phone}
-                        onChange={(e) => createForm.setData('phone', e.target.value)}
+                        onChange={(e) => createForm.setData('phone', e.target.value.replace(/[^\d+\-\s]/g, ''))}
                         placeholder="+60 12-345 6789"
                         error={createForm.errors.phone}
                     />
@@ -323,7 +360,7 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
                             label="Phone (optional)"
                             type="tel"
                             value={editForm.data.phone}
-                            onChange={(e) => editForm.setData('phone', e.target.value)}
+                            onChange={(e) => editForm.setData('phone', e.target.value.replace(/[^\d+\-\s]/g, ''))}
                             error={editForm.errors.phone}
                         />
                         <div className="flex gap-3 pt-2">
@@ -373,9 +410,9 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
                             Are you sure you want to delete <span className="font-semibold text-amber-950">{activeModal.user.name}</span>? This action cannot be undone.
                         </p>
                         <div className="flex gap-3">
-                            <Button type="button" variant="ghost" onClick={close} className="flex-1">Cancel</Button>
-                            <Button type="button" variant="destructive" onClick={confirmDelete} className="flex-1">
-                                Delete
+                            <Button type="button" variant="ghost" onClick={close} disabled={deleting} className="flex-1">Cancel</Button>
+                            <Button type="button" variant="destructive" onClick={confirmDelete} disabled={deleting} className="flex-1">
+                                {deleting ? 'Deleting...' : 'Delete'}
                             </Button>
                         </div>
                     </div>
