@@ -111,10 +111,9 @@ export default function Dashboard() {
             <Head title="Dashboard" />
             <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
 
-                <div className="space-y-2">
+                <div className="space-y-4">
                     <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Dashboard' }]} />
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <h2 className="text-3xl font-black text-amber-950 tracking-tighter uppercase">Apiary Dashboard</h2>
+                    <div className="flex justify-end">
                         <Tabs
                             tabs={[
                                 { id: 'overview', label: 'Overview', icon: <LayoutDashboard className="w-4 h-4" /> },

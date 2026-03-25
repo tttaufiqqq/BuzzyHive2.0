@@ -33,10 +33,7 @@ export function SettingsLayout({ children }: PropsWithChildren) {
         <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
 
             {/* Page header — matches dashboard pattern */}
-            <div className="space-y-2">
-                <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Settings' }]} />
-                <h2 className="text-3xl font-black text-amber-950 tracking-tighter uppercase">Settings</h2>
-            </div>
+            <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Settings' }]} />
 
             <div className="flex flex-col lg:flex-row lg:gap-10">
                 <aside className="w-full lg:w-44 mb-6 lg:mb-0">
