@@ -7,97 +7,56 @@ import { AuthenticatedLayout } from '@/layouts/authenticated-layout';
 import { cn, toUrl } from '@/lib/utils';
 import type { NavItem } from '@/types';
 
-const sidebarNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: '/admin',
-        icon: null,
-        exact: true,
-    },
-    {
-        title: 'Beekeepers',
-        href: '/admin/beekeepers',
-        icon: null,
-    },
-    {
-        title: 'Thesis',
-        href: '/admin/thesis',
-        icon: null,
-    },
+// ── Nav items ──────────────────────────────────────────────────────────
+// Add new admin sections here. Icon is unused (horizontal tabs don't show icons).
+const NAV_ITEMS: NavItem[] = [
+    { title: 'Dashboard',  href: '/admin',            icon: null, exact: true },
+    { title: 'Beekeepers', href: '/admin/beekeepers',  icon: null },
+    { title: 'Thesis',     href: '/admin/thesis',      icon: null },
 ];
 
 export function AdminLayout({ children }: PropsWithChildren) {
     const { isCurrentUrl, isCurrentOrParentUrl } = useCurrentUrl();
-    const isActive = (item: NavItem) => item.exact ? isCurrentUrl(item.href) : isCurrentOrParentUrl(item.href);
+    const isActive = (item: NavItem) =>
+        item.exact ? isCurrentUrl(item.href) : isCurrentOrParentUrl(item.href);
 
-    if (typeof window === 'undefined') {
-        return null;
-    }
+    if (typeof window === 'undefined') return null;
 
     return (
         <AuthenticatedLayout>
-            <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8">
+            <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-6">
 
-                {/* Page header */}
-                <div className="space-y-2">
+                {/* ── Top bar: breadcrumb + tabs ── */}
+                <div className="flex items-center justify-between gap-4 flex-wrap">
                     <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Admin' }]} />
-                    <h2 className="text-3xl font-black text-amber-950 tracking-tighter uppercase">Admin</h2>
+
+                    <nav className="flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5" aria-label="Admin">
+                        {NAV_ITEMS.map((item, index) => (
+                            <Link
+                                key={`${toUrl(item.href)}-${index}`}
+                                href={item.href}
+                                className={cn(
+                                    'px-4 py-2 text-sm rounded-xl transition-all whitespace-nowrap',
+                                    isActive(item)
+                                        ? 'bg-white shadow-sm font-semibold text-amber-900'
+                                        : 'text-amber-900/60 hover:bg-yellow-200/50'
+                                )}
+                            >
+                                {item.title}
+                            </Link>
+                        ))}
+                    </nav>
                 </div>
 
-                <div className="flex flex-col lg:flex-row lg:gap-10">
-                    <aside className="w-full lg:w-44 mb-6 lg:mb-0">
-                        {/* Mobile: horizontal tabs */}
-                        <nav
-                            className="flex lg:hidden overflow-x-auto gap-1 bg-yellow-100/50 rounded-2xl p-1.5"
-                            aria-label="Admin"
-                        >
-                            {sidebarNavItems.map((item, index) => (
-                                <Link
-                                    key={`${toUrl(item.href)}-${index}`}
-                                    href={item.href}
-                                    className={cn(
-                                        'flex-shrink-0 px-4 py-2 text-sm rounded-xl transition-all',
-                                        isActive(item)
-                                            ? 'bg-white shadow-sm font-semibold text-amber-900'
-                                            : 'text-amber-900/60 hover:bg-yellow-200/50'
-                                    )}
-                                >
-                                    {item.title}
-                                </Link>
-                            ))}
-                        </nav>
+                {/* ── Page content (full width) ── */}
+                <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                >
+                    {children}
+                </motion.div>
 
-                        {/* Desktop: vertical tabs */}
-                        <nav
-                            className="hidden lg:flex flex-col gap-1 bg-yellow-100/50 rounded-2xl p-1.5"
-                            aria-label="Admin"
-                        >
-                            {sidebarNavItems.map((item, index) => (
-                                <Link
-                                    key={`${toUrl(item.href)}-${index}`}
-                                    href={item.href}
-                                    className={cn(
-                                        'px-4 py-2 text-sm rounded-xl transition-all',
-                                        isActive(item)
-                                            ? 'bg-white shadow-sm font-semibold text-amber-900'
-                                            : 'text-amber-900/60 hover:bg-yellow-200/50'
-                                    )}
-                                >
-                                    {item.title}
-                                </Link>
-                            ))}
-                        </nav>
-                    </aside>
-
-                    <motion.div
-                        className="flex-1"
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
-                    >
-                        {children}
-                    </motion.div>
-                </div>
             </div>
         </AuthenticatedLayout>
     );

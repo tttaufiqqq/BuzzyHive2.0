@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
 import React from "react";
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
     isOpen: boolean;
@@ -18,10 +19,15 @@ const maxWidthMap = {
 };
 
 export function Modal({ isOpen, onClose, title, children, maxWidth = 'md' }: ModalProps) {
-    return (
+    // Portal to document.body bypasses any parent stacking context
+    // (e.g. motion.div opacity animations) that would cause z-index to lose
+    // against the sticky navbar.
+    if (typeof document === 'undefined') return null;
+
+    return createPortal(
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-6">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -57,7 +63,8 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'md' }: Mod
                     </motion.div>
                 </div>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body
     );
 }
 
