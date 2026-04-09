@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Auth\AcceptInviteController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified', 'beekeeper'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
+    Route::get('hives/{hive}/analytics', [AnalyticsController::class, 'show'])->name('analytics.show');
 });
 
 // Invite acceptance — signed URL, no auth required
