@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SensorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -11,3 +12,5 @@ use Illuminate\Support\Facades\Route;
 | Routes are prefixed with /api automatically.
 |
 */
+
+Route::post('/sensor-data', [SensorController::class, 'store']);
