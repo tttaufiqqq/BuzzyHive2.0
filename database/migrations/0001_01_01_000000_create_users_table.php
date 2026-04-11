@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamp('two_factor_confirmed_at')->nullable();
             $table->string('profile_photo_path')->nullable();
             $table->string('telegram_chat_id', 100)->nullable();
+            $table->string('status')->default('active');
             $table->rememberToken();
             $table->timestamps();
         });
