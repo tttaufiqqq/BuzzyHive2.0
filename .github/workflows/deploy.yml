@@ -1,8 +1,6 @@
 name: Deploy BuzzyHive to Azure
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 jobs:

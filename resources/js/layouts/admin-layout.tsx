@@ -20,7 +20,9 @@ export function AdminLayout({ children }: PropsWithChildren) {
     const isActive = (item: NavItem) =>
         item.exact ? isCurrentUrl(item.href) : isCurrentOrParentUrl(item.href);
 
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined') {
+return null;
+}
 
     return (
         <AuthenticatedLayout>

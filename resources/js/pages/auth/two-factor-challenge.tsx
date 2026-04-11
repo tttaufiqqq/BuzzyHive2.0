@@ -28,6 +28,7 @@ export default function TwoFactorChallenge() {
                 toggleText: 'Use authentication code instead',
             };
         }
+
         return {
             title: 'Two-Factor Auth',
             description: 'Enter the authentication code from your authenticator app.',

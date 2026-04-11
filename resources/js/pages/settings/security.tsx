@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from 'motion/react';
 import { Form, Head } from '@inertiajs/react';
 import { ShieldCheck } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useRef, useState } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import { Button } from '@/components/core/button';

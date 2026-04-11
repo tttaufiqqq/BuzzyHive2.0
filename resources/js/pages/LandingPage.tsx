@@ -1,10 +1,10 @@
-import { motion } from 'motion/react';
-import { Bug as Bee, ArrowRight, ShieldCheck, BarChart3, Users, Zap, Globe, Leaf } from 'lucide-react';
-import { Button } from '@/components/core/button';
 import { Link, usePage } from '@inertiajs/react';
+import { Bug as Bee, ArrowRight, ShieldCheck, BarChart3, Users, Zap, Globe, Leaf } from 'lucide-react';
+import { motion } from 'motion/react';
 import React, { useState } from "react";
-import { type Auth } from '@/types';
+import { Button } from '@/components/core/button';
 import { ThesisModal } from '@/components/core/thesis-modal';
+import type {Auth} from '@/types';
 
 type Props = { thesisUrl?: string | null };
 

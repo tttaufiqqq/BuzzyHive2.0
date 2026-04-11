@@ -1,6 +1,6 @@
-import { InputError } from '@/components/core/input-error';
 import { Form, Head, Link } from '@inertiajs/react';
 import { Bug as Bee, ArrowRight, Lock } from 'lucide-react';
+import { InputError } from '@/components/core/input-error';
 import { store } from '@/routes/password/confirm';
 
 export default function ConfirmPassword() {

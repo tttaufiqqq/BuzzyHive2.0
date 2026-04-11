@@ -1,9 +1,9 @@
 import { Head, router } from '@inertiajs/react';
 import { TrendingUp, AlertTriangle, Clock, Users, Thermometer, Droplets, Wind, Weight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/core/card';
 import { Modal } from '@/components/core/modal';
 import { AdminLayout } from '@/layouts/admin-layout';
-import { useState, useEffect } from 'react';
 
 // ── Types ──────────────────────────────────────────────────────────────
 // Designed to match the future hives + sensor_readings DB schema.
@@ -106,18 +106,23 @@ export default function AdminDashboard({ stats }: Props) {
 
     // Arrow key navigation when modal is open
     useEffect(() => {
-        if (selectedIndex === null) return;
+        if (selectedIndex === null) {
+return;
+}
+
         const handler = (e: KeyboardEvent) => {
             if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                 e.preventDefault();
                 setSelectedIndex(prev => prev !== null && prev > 0 ? prev - 1 : prev);
             }
+
             if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                 e.preventDefault();
                 setSelectedIndex(prev => prev !== null && prev < sortedHives.length - 1 ? prev + 1 : prev);
             }
         };
         window.addEventListener('keydown', handler);
+
         return () => window.removeEventListener('keydown', handler);
     }, [selectedIndex, sortedHives.length]);
 

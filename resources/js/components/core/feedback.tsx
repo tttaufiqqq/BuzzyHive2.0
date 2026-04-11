@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, CheckCircle2, Info, X, XCircle } from 'lucide-react';
+import { motion } from 'motion/react';
+import React from 'react';
 import { cn } from '@/lib/utils';
 
 type AlertVariant = 'info' | 'success' | 'warning' | 'error';
@@ -61,6 +61,7 @@ export const Alert = ({ variant = 'info', title, children, onClose, className }:
 
 export const Progress = ({ value, max = 100, className }: { value: number; max?: number; className?: string }) => {
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
+
   return (
     <div className={cn('h-2 w-full bg-yellow-100 rounded-full overflow-hidden', className)}>
       <motion.div

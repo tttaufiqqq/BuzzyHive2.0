@@ -1,6 +1,4 @@
-import { AuthenticatedLayout } from '@/layouts/authenticated-layout';
 import { Head } from '@inertiajs/react';
-import { Card } from '@/components/core/card';
 import {
     ResponsiveContainer,
     AreaChart, Area,
@@ -9,6 +7,8 @@ import {
     LineChart, Line,
     XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
+import { Card } from '@/components/core/card';
+import { AuthenticatedLayout } from '@/layouts/authenticated-layout';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -75,6 +75,7 @@ const TOOLTIP_STYLE = {
 
 function HriScoreCard({ hive }: { hive: HiveSummary }) {
     const color = CATEGORY_COLORS[hive.latest_category] ?? '#d97706';
+
     return (
         <Card className="flex flex-col items-center justify-center py-8 gap-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-amber-900/50">HRI Score</p>
