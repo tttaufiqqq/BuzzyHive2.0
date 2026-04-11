@@ -1,6 +1,6 @@
+import { motion, AnimatePresence } from 'motion/react';
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
 
 interface DropdownItem {
@@ -29,17 +29,20 @@ export const Dropdown = ({ trigger, items, align = 'right', className }: Dropdow
       const target = event.target as Node;
       const insideTrigger = triggerRef.current?.contains(target);
       const insideMenu = menuRef.current?.contains(target);
+
       if (!insideTrigger && !insideMenu) {
         setIsOpen(false);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
+
     if (!isOpen && triggerRef.current) {
       const rect = triggerRef.current.getBoundingClientRect();
       setMenuStyle(
@@ -48,6 +51,7 @@ export const Dropdown = ({ trigger, items, align = 'right', className }: Dropdow
           : { position: 'fixed', top: rect.bottom + 8, left: rect.left, zIndex: 9999 }
       );
     }
+
     setIsOpen((prev) => !prev);
   };
 

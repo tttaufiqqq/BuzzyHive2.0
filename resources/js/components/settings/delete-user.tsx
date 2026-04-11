@@ -2,8 +2,8 @@ import { Form } from '@inertiajs/react';
 import { useRef, useState } from 'react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import { Button } from '@/components/core/button';
-import { Heading } from '@/components/settings/heading';
 import { Modal } from '@/components/core/modal';
+import { Heading } from '@/components/settings/heading';
 import { PasswordInput } from '@/components/settings/password-input';
 
 export function DeleteUser() {

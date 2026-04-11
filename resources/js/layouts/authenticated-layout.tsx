@@ -1,9 +1,9 @@
-import React from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Bug as Bee, LayoutDashboard, Settings, User, LogOut, Home, Users } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
+import React from 'react';
 import { Dropdown } from '@/components/core/dropdown';
+import { cn } from '@/lib/utils';
 
 interface AuthenticatedLayoutProps {
     header?: React.ReactNode;
@@ -91,6 +91,7 @@ export function AuthenticatedLayout({ header = null, children }: AuthenticatedLa
             <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-lg border-t border-yellow-100 px-6 py-3 flex justify-around items-center md:hidden">
                 {navItems.map((item) => {
                     const isActive = route().current(item.routeName);
+
                     return (
                         <Link
                             key={item.routeName}

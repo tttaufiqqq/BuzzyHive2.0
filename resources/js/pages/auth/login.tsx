@@ -1,7 +1,7 @@
-import { InputError } from '@/components/core/input-error';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Bug as Bee, ArrowRight, Lock, Mail } from 'lucide-react';
 import React from 'react';
+import { InputError } from '@/components/core/input-error';
 
 export default function Login({ status, canResetPassword }: { status?: string; canResetPassword: boolean }) {
     const { data, setData, post, processing, errors, reset } = useForm({

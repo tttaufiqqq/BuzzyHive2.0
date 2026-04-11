@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import React from "react";
 import { createPortal } from 'react-dom';
 
@@ -22,7 +22,9 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'md' }: Mod
     // Portal to document.body bypasses any parent stacking context
     // (e.g. motion.div opacity animations) that would cause z-index to lose
     // against the sticky navbar.
-    if (typeof document === 'undefined') return null;
+    if (typeof document === 'undefined') {
+return null;
+}
 
     return createPortal(
         <AnimatePresence>

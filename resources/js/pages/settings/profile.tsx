@@ -1,11 +1,11 @@
-import { AnimatePresence, motion } from 'motion/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
+import { AnimatePresence, motion } from 'motion/react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import { Button } from '@/components/core/button';
 import { Card } from '@/components/core/card';
+import { Input } from '@/components/core/input';
 import { DeleteUser } from '@/components/settings/delete-user';
 import { Heading } from '@/components/settings/heading';
-import { Input } from '@/components/core/input';
 import { AuthenticatedLayout } from '@/layouts/authenticated-layout';
 import { SettingsLayout } from '@/layouts/settings/layout';
 import { send } from '@/routes/verification';

@@ -1,7 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import { Bug as Bee, ArrowRight } from 'lucide-react';
 import { InputError } from '@/components/core/input-error';
 import { PasswordInput } from '@/components/settings/password-input';
-import { Bug as Bee, ArrowRight } from 'lucide-react';
 
 type Props = {
     email: string;

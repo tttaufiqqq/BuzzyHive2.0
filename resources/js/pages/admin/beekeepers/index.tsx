@@ -32,6 +32,7 @@ function StatusBadge({ status }: { status: string }) {
             </span>
         );
     }
+
     if (status === 'active') {
         return (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
@@ -39,6 +40,7 @@ function StatusBadge({ status }: { status: string }) {
             </span>
         );
     }
+
     return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-500">
             Deactivated
@@ -69,41 +71,60 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
         e.preventDefault();
 
         const errors: Record<string, string> = {};
-        if (!createForm.data.name.trim() || createForm.data.name.trim().length < 2)
-            errors.name = 'Name must be at least 2 characters.';
-        else if (!/^[\p{L}\s'\-.]+$/u.test(createForm.data.name.trim()))
-            errors.name = 'Name must contain letters only.';
-        if (!/^[\w.%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}$/.test(createForm.data.email))
-            errors.email = 'Enter a valid email address.';
-        if (createForm.data.phone && !/^(\+?60|0)[0-9\-\s]{8,14}$/.test(createForm.data.phone))
-            errors.phone = 'Use Malaysian format e.g. 012-345 6789';
+
+        if (!createForm.data.name.trim() || createForm.data.name.trim().length < 2) {
+errors.name = 'Name must be at least 2 characters.';
+} else if (!/^[\p{L}\s'\-.]+$/u.test(createForm.data.name.trim())) {
+errors.name = 'Name must contain letters only.';
+}
+
+        if (!/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(createForm.data.email)) {
+errors.email = 'Enter a valid email address.';
+}
+
+        if (createForm.data.phone && !/^(\+?60|0)[0-9\s-]{8,14}$/.test(createForm.data.phone)) {
+errors.phone = 'Use Malaysian format e.g. 012-345 6789';
+}
 
         if (Object.keys(errors).length > 0) {
             createForm.setError(errors as never);
+
             return;
         }
 
         createForm.post(route('admin.beekeepers.store'), {
-            onSuccess: () => { createForm.reset(); close(); },
+            onSuccess: () => {
+ createForm.reset(); close(); 
+},
         });
     };
 
     const submitEdit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (activeModal?.type !== 'edit') return;
+
+        if (activeModal?.type !== 'edit') {
+return;
+}
 
         const errors: Record<string, string> = {};
-        if (!editForm.data.name.trim() || editForm.data.name.trim().length < 2)
-            errors.name = 'Name must be at least 2 characters.';
-        else if (!/^[\p{L}\s'\-.]+$/u.test(editForm.data.name.trim()))
-            errors.name = 'Name must contain letters only.';
-        if (!/^[\w.%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}$/.test(editForm.data.email))
-            errors.email = 'Enter a valid email address.';
-        if (editForm.data.phone && !/^(\+?60|0)[0-9\-\s]{8,14}$/.test(editForm.data.phone))
-            errors.phone = 'Use Malaysian format e.g. 012-345 6789';
+
+        if (!editForm.data.name.trim() || editForm.data.name.trim().length < 2) {
+errors.name = 'Name must be at least 2 characters.';
+} else if (!/^[\p{L}\s'\-.]+$/u.test(editForm.data.name.trim())) {
+errors.name = 'Name must contain letters only.';
+}
+
+        if (!/^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/.test(editForm.data.email)) {
+errors.email = 'Enter a valid email address.';
+}
+
+        if (editForm.data.phone && !/^(\+?60|0)[0-9\s-]{8,14}$/.test(editForm.data.phone)) {
+errors.phone = 'Use Malaysian format e.g. 012-345 6789';
+}
 
         if (Object.keys(errors).length > 0) {
             editForm.setError(errors as never);
+
             return;
         }
 
@@ -113,21 +134,30 @@ export default function BeekeepersIndex({ beekeepers, stats }: Props) {
     };
 
     const confirmToggle = () => {
-        if (activeModal?.type !== 'toggle') return;
+        if (activeModal?.type !== 'toggle') {
+return;
+}
+
         router.patch(route('admin.beekeepers.toggle-status', { user: activeModal.user.id }), {}, {
             onSuccess: () => close(),
         });
     };
 
     const confirmResend = () => {
-        if (activeModal?.type !== 'resend') return;
+        if (activeModal?.type !== 'resend') {
+return;
+}
+
         router.post(route('admin.beekeepers.resend-invite', { user: activeModal.user.id }), {}, {
             onSuccess: () => close(),
         });
     };
 
     const confirmDelete = () => {
-        if (activeModal?.type !== 'delete') return;
+        if (activeModal?.type !== 'delete') {
+return;
+}
+
         setDeleting(true);
         router.delete(route('admin.beekeepers.destroy', { user: activeModal.user.id }), {
             onFinish: () => {

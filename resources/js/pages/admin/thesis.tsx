@@ -1,6 +1,6 @@
 import { Head, router, usePage } from '@inertiajs/react';
-import { useRef, useState } from 'react';
 import { Upload, FileText, Trash2, ExternalLink, CheckCircle } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/core/button';
 import { Card } from '@/components/core/card';
 import { Alert } from '@/components/core/feedback';
@@ -24,11 +24,16 @@ export default function ThesisPage({ thesisUrl, uploadedAt }: Props) {
     const [deleting, setDeleting] = useState(false);
 
     function handleFile(file: File | null) {
-        if (!file) return;
+        if (!file) {
+return;
+}
+
         if (file.type !== 'application/pdf') {
             alert('Only PDF files are allowed.');
+
             return;
         }
+
         setSelectedFile(file);
     }
 
@@ -39,7 +44,10 @@ export default function ThesisPage({ thesisUrl, uploadedAt }: Props) {
     }
 
     function handleUpload() {
-        if (!selectedFile) return;
+        if (!selectedFile) {
+return;
+}
+
         setUploading(true);
         const form = new FormData();
         form.append('thesis', selectedFile);
@@ -130,7 +138,9 @@ export default function ThesisPage({ thesisUrl, uploadedAt }: Props) {
                                 : 'border-amber-200 hover:border-yellow-400 hover:bg-yellow-50/50'
                         }`}
                         onClick={() => fileRef.current?.click()}
-                        onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+                        onDragOver={(e) => {
+ e.preventDefault(); setDragging(true); 
+}}
                         onDragLeave={() => setDragging(false)}
                         onDrop={handleDrop}
                     >

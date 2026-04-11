@@ -1,5 +1,5 @@
-import { AnimatePresence, motion } from 'motion/react';
 import { X, Download, FileText } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useEffect } from 'react';
 
 interface ThesisModalProps {
@@ -11,7 +11,10 @@ interface ThesisModalProps {
 export function ThesisModal({ isOpen, onClose, thesisUrl }: ThesisModalProps) {
     useEffect(() => {
         document.body.style.overflow = isOpen ? 'hidden' : '';
-        return () => { document.body.style.overflow = ''; };
+
+        return () => {
+ document.body.style.overflow = ''; 
+};
     }, [isOpen]);
 
     return (
