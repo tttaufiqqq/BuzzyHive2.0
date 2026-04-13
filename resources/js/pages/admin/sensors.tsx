@@ -1,6 +1,7 @@
 import { Head, router } from '@inertiajs/react';
 import { Thermometer, Droplets, Flame, ChevronDown, Check } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { motion } from 'motion/react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { Card } from '@/components/core/card';
 import { AdminLayout } from '@/layouts/admin-layout';
@@ -31,8 +32,8 @@ type Props = {
 };
 
 // ── ArcGauge ────────────────────────────────────────────────────────────
-// Semicircular SVG gauge with filled arc + needle.
-// Angle math: ratio 0 = left (180°), ratio 1 = right (0°), sweeping through top (90°).
+// Needle drawn pointing right (+x), rotated by -(1-ratio)*180° around pivot.
+// CSS transition on both arc fill and needle rotation for smooth animation.
 function ArcGauge({ value, max, color }: { value: number; max: number; color: string }) {
     const cx        = 60;
     const cy        = 58;
@@ -40,37 +41,34 @@ function ArcGauge({ value, max, color }: { value: number; max: number; color: st
     const arcLength = Math.PI * radius;
     const ratio     = Math.min(value / max, 1);
     const fill      = ratio * arcLength;
+    const rotateDeg = -(1 - ratio) * 180;
 
     const d = `M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`;
-
-    // Needle — points from center toward the arc at the current ratio
-    const angle  = Math.PI * (1 - ratio);
-    const tipX   = cx + 38 * Math.cos(angle);
-    const tipY   = cy - 38 * Math.sin(angle);
-    const tailX  = cx - 7  * Math.cos(angle);
-    const tailY  = cy + 7  * Math.sin(angle);
 
     return (
         <svg viewBox="0 0 120 65" className="w-full max-w-[180px] mx-auto">
             {/* Background arc */}
             <path d={d} fill="none" stroke="#FEF3C7" strokeWidth="7" strokeLinecap="round" />
-            {/* Filled arc */}
+            {/* Filled arc — animates on value change */}
             <path
                 d={d}
                 fill="none"
                 stroke={color}
                 strokeWidth="7"
                 strokeLinecap="round"
-                strokeDasharray={`${fill} ${arcLength}`}
+                style={{
+                    strokeDasharray: `${fill} ${arcLength}`,
+                    transition: 'stroke-dasharray 0.7s ease-out, stroke 0.4s ease',
+                }}
             />
-            {/* Needle */}
-            <line
-                x1={tailX} y1={tailY}
-                x2={tipX}  y2={tipY}
-                stroke="#78350F"
-                strokeWidth="2"
-                strokeLinecap="round"
-            />
+            {/* Needle — rotates around pivot, drawn pointing right at rest */}
+            <g style={{
+                transformOrigin: `${cx}px ${cy}px`,
+                transform: `rotate(${rotateDeg}deg)`,
+                transition: 'transform 0.7s ease-out',
+            }}>
+                <line x1={cx - 7} y1={cy} x2={cx + 38} y2={cy} stroke="#78350F" strokeWidth="2" strokeLinecap="round" />
+            </g>
             {/* Pivot dot */}
             <circle cx={cx} cy={cy} r="4" fill="#78350F" />
             <circle cx={cx} cy={cy} r="2" fill="#FEF3C7" />
@@ -83,8 +81,12 @@ function ProgressBar({ value, color }: { value: number; color: string }) {
     return (
         <div className="w-full h-3 bg-amber-100 rounded-full overflow-hidden my-4">
             <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${Math.min(value, 100)}%`, backgroundColor: color }}
+                className="h-full rounded-full"
+                style={{
+                    width: `${Math.min(value, 100)}%`,
+                    backgroundColor: color,
+                    transition: 'width 0.7s ease-out, background-color 0.4s ease',
+                }}
             />
         </div>
     );
@@ -92,9 +94,9 @@ function ProgressBar({ value, color }: { value: number; color: string }) {
 
 // ── Color helpers ────────────────────────────────────────────────────────
 function tempColor(t: number): string {
-    if (t > 37) return '#EF4444'; // red
-    if (t > 32) return '#F59E0B'; // amber
-    return '#10B981';             // green
+    if (t > 37) return '#EF4444';
+    if (t > 32) return '#F59E0B';
+    return '#10B981';
 }
 
 function humidColor(h: number): string {
@@ -103,9 +105,13 @@ function humidColor(h: number): string {
     return '#10B981';
 }
 
+// MQ2 display max is 500 — practical sensor range in a hive environment.
+// Raw ADC 0-4095 but clean air reads 10-100, dangerous smoke reads 300-500+.
+const MQ2_GAUGE_MAX = 500;
+
 function mq2Color(v: number): string {
-    if (v > 2730) return '#EF4444';
-    if (v > 1365) return '#F59E0B';
+    if (v > 300) return '#EF4444';
+    if (v > 150) return '#F59E0B';
     return '#10B981';
 }
 
@@ -129,9 +135,44 @@ function SensorLine({ data, dataKey }: { data: HistoryPoint[]; dataKey: keyof Hi
                     <XAxis dataKey="time" axisLine={false} tickLine={false} tick={AXIS_TICK} dy={8} interval="preserveStartEnd" />
                     <YAxis axisLine={false} tickLine={false} tick={AXIS_TICK} width={32} />
                     <Tooltip contentStyle={TOOLTIP_STYLE} />
-                    <Line type="monotone" dataKey={dataKey} stroke="#F59E0B" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey={dataKey} stroke="#F59E0B" strokeWidth={2} dot={false} isAnimationActive={false} />
                 </LineChart>
             </ResponsiveContainer>
+        </div>
+    );
+}
+
+// ── SensorHeader ─────────────────────────────────────────────────────────
+function SensorHeader({ icon, label, value, iconBg, iconColor }: {
+    icon:       React.ReactNode;
+    label:      string;
+    value:      string;
+    iconBg:     string;
+    iconColor:  string;
+}) {
+    return (
+        <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+                <motion.div
+                    initial={{ scale: 0.6, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 20 }}
+                    className={`${iconBg} p-2 rounded-xl`}
+                    style={{ color: iconColor }}
+                >
+                    {icon}
+                </motion.div>
+                <span className="text-xs font-black uppercase tracking-widest text-amber-900/60">{label}</span>
+            </div>
+            <motion.span
+                key={value}
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-2xl font-black text-amber-950"
+            >
+                {value}
+            </motion.span>
         </div>
     );
 }
@@ -146,7 +187,6 @@ function HiveDropdown({ hives, selected, onSelect }: {
     const ref = useRef<HTMLDivElement>(null);
     const selectedHive = hives.find(h => h.id === selected);
 
-    // Close on outside click
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -164,7 +204,6 @@ function HiveDropdown({ hives, selected, onSelect }: {
                 <span>{selectedHive?.name ?? 'Select hive'}</span>
                 <ChevronDown className={`w-4 h-4 text-amber-900/40 transition-transform ${open ? 'rotate-180' : ''}`} />
             </button>
-
             {open && (
                 <div className="absolute top-full mt-2 left-0 z-20 w-full min-w-[180px] bg-white border border-yellow-100 rounded-2xl shadow-lg overflow-hidden">
                     {hives.map(h => (
@@ -190,12 +229,10 @@ export default function AdminSensors({ hives, selected, window, latest, history 
 
     const WINDOWS: ('1h' | '6h' | '24h')[] = ['1h', '6h', '24h'];
 
-    // ── Live polling — reload latest + history every 5s, pause when tab hidden
+    // Live polling — reload latest + history every 5s, pause when tab hidden
     useEffect(() => {
         const tick = () => {
-            if (!document.hidden) {
-                router.reload({ only: ['latest', 'history'] });
-            }
+            if (!document.hidden) router.reload({ only: ['latest', 'history'] });
         };
         const id = setInterval(tick, 5000);
         return () => clearInterval(id);
@@ -209,10 +246,8 @@ export default function AdminSensors({ hives, selected, window, latest, history 
 
                 {/* ── Controls ────────────────────────────────────── */}
                 <div className="flex items-center justify-between flex-wrap gap-3">
-
-                    {/* Hive selector + live badge */}
                     <div className="flex items-center gap-3">
-                            <HiveDropdown
+                        <HiveDropdown
                             hives={hives}
                             selected={selected}
                             onSelect={id => navigate({ hive_id: id })}
@@ -225,8 +260,6 @@ export default function AdminSensors({ hives, selected, window, latest, history 
                             <span className="text-xs font-bold text-emerald-700">Live</span>
                         </div>
                     </div>
-
-                    {/* Time window */}
                     <div className="flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5">
                         {WINDOWS.map(w => (
                             <button
@@ -251,68 +284,65 @@ export default function AdminSensors({ hives, selected, window, latest, history 
                         <p className="text-sm text-amber-900/50 text-center py-8">No hives found.</p>
                     </Card>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-6">
 
-                        {/* Temperature */}
-                        <Card className="flex flex-col">
-                            <div className="flex items-center justify-between mb-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="bg-amber-100 p-2 rounded-xl">
-                                        <Thermometer className="w-4 h-4 text-amber-700" />
-                                    </div>
-                                    <span className="text-xs font-black uppercase tracking-widest text-amber-900/60">Temperature</span>
-                                </div>
-                                <span className="text-2xl font-black text-amber-950">
-                                    {latest ? `${latest.temperature}°C` : '—'}
-                                </span>
-                            </div>
-                            <ArcGauge
-                                value={latest?.temperature ?? 0}
-                                max={45}
-                                color={latest ? tempColor(latest.temperature) : '#FEF3C7'}
-                            />
-                            <SensorLine data={history} dataKey="temperature" />
-                        </Card>
+                        {/* ── Top row: Temperature + Humidity ── */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                        {/* Humidity */}
-                        <Card className="flex flex-col">
-                            <div className="flex items-center justify-between mb-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="bg-blue-50 p-2 rounded-xl">
-                                        <Droplets className="w-4 h-4 text-blue-500" />
-                                    </div>
-                                    <span className="text-xs font-black uppercase tracking-widest text-amber-900/60">Humidity</span>
-                                </div>
-                                <span className="text-2xl font-black text-amber-950">
-                                    {latest ? `${latest.humidity}%` : '—'}
-                                </span>
-                            </div>
-                            <ProgressBar
-                                value={latest?.humidity ?? 0}
-                                color={latest ? humidColor(latest.humidity) : '#FEF3C7'}
-                            />
-                            <SensorLine data={history} dataKey="humidity" />
-                        </Card>
+                            {/* Temperature */}
+                            <Card className="flex flex-col">
+                                <SensorHeader
+                                    icon={<Thermometer className="w-4 h-4" />}
+                                    label="Temperature"
+                                    value={latest ? `${latest.temperature}°C` : '—'}
+                                    iconBg="bg-amber-100"
+                                    iconColor="#B45309"
+                                />
+                                <ArcGauge
+                                    value={latest?.temperature ?? 0}
+                                    max={45}
+                                    color={latest ? tempColor(latest.temperature) : '#FEF3C7'}
+                                />
+                                <SensorLine data={history} dataKey="temperature" />
+                            </Card>
 
-                        {/* MQ2 Gas */}
-                        <Card className="flex flex-col">
-                            <div className="flex items-center justify-between mb-1">
-                                <div className="flex items-center gap-2">
-                                    <div className="bg-red-50 p-2 rounded-xl">
-                                        <Flame className="w-4 h-4 text-red-500" />
-                                    </div>
-                                    <span className="text-xs font-black uppercase tracking-widest text-amber-900/60">Gas (MQ2)</span>
-                                </div>
-                                <span className="text-2xl font-black text-amber-950">
-                                    {latest ? `${latest.mq2}` : '—'}
-                                </span>
-                            </div>
-                            <ArcGauge
-                                value={latest?.mq2 ?? 0}
-                                max={4095}
-                                color={latest ? mq2Color(latest.mq2) : '#FEF3C7'}
+                            {/* Humidity */}
+                            <Card className="flex flex-col">
+                                <SensorHeader
+                                    icon={<Droplets className="w-4 h-4" />}
+                                    label="Humidity"
+                                    value={latest ? `${latest.humidity}%` : '—'}
+                                    iconBg="bg-blue-50"
+                                    iconColor="#3B82F6"
+                                />
+                                <ProgressBar
+                                    value={latest?.humidity ?? 0}
+                                    color={latest ? humidColor(latest.humidity) : '#FEF3C7'}
+                                />
+                                <SensorLine data={history} dataKey="humidity" />
+                            </Card>
+
+                        </div>
+
+                        {/* ── Bottom row: MQ2 full width ── */}
+                        <Card>
+                            <SensorHeader
+                                icon={<Flame className="w-4 h-4" />}
+                                label="Gas (MQ2)"
+                                value={latest ? `${latest.mq2} ADC` : '—'}
+                                iconBg="bg-red-50"
+                                iconColor="#EF4444"
                             />
-                            <SensorLine data={history} dataKey="mq2" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mt-2">
+                                <div className="flex justify-center">
+                                    <ArcGauge
+                                        value={latest?.mq2 ?? 0}
+                                        max={MQ2_GAUGE_MAX}
+                                        color={latest ? mq2Color(latest.mq2) : '#FEF3C7'}
+                                    />
+                                </div>
+                                <SensorLine data={history} dataKey="mq2" />
+                            </div>
                         </Card>
 
                     </div>
