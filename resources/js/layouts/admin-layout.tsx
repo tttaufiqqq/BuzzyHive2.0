@@ -11,8 +11,9 @@ import type { NavItem } from '@/types';
 // Add new admin sections here. Icon is unused (horizontal tabs don't show icons).
 const NAV_ITEMS: NavItem[] = [
     { title: 'Dashboard',  href: '/admin',            icon: null, exact: true },
-    { title: 'Beekeepers', href: '/admin/beekeepers',  icon: null },
-    { title: 'Thesis',     href: '/admin/thesis',      icon: null },
+    { title: 'Sensors',    href: '/admin/sensors',    icon: null },
+    { title: 'Beekeepers', href: '/admin/beekeepers', icon: null },
+    { title: 'Thesis',     href: '/admin/thesis',     icon: null },
 ];
 
 export function AdminLayout({ children }: PropsWithChildren) {
