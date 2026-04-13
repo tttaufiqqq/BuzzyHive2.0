@@ -1,5 +1,5 @@
 import { Head, router } from '@inertiajs/react';
-import { Thermometer, Droplets, Flame, ChevronDown, Check } from 'lucide-react';
+import { Thermometer, Droplets, Flame, ChevronDown, Check, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
@@ -27,6 +27,7 @@ type Props = {
     hives:    Hive[];
     selected: number;
     window:   '1h' | '6h' | '24h';
+    date:     string | null;
     latest:   LatestReading;
     history:  HistoryPoint[];
 };
@@ -152,8 +153,8 @@ const TOOLTIP_STYLE = {
 
 function SensorLine({ data, dataKey }: { data: HistoryPoint[]; dataKey: keyof HistoryPoint }) {
     return (
-        <div className="h-[140px] w-full mt-4 min-w-0">
-            <ResponsiveContainer width="100%" height="100%">
+        <div className="w-full mt-4 min-w-0">
+            <ResponsiveContainer width="100%" height={140}>
                 <LineChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#FEF3C7" />
                     <XAxis dataKey="time" axisLine={false} tickLine={false} tick={AXIS_TICK} dy={8} interval="preserveStartEnd" />
@@ -247,9 +248,9 @@ function HiveDropdown({ hives, selected, onSelect }: {
 }
 
 // ── AdminSensors ─────────────────────────────────────────────────────────
-export default function AdminSensors({ hives, selected, window, latest, history }: Props) {
-    const navigate = (params: Record<string, string | number>) =>
-        router.get(route('admin.sensors.index'), { hive_id: selected, window, ...params });
+export default function AdminSensors({ hives, selected, window, date, latest, history }: Props) {
+    const navigate = (params: Record<string, string | number | null>) =>
+        router.get(route('admin.sensors.index'), { hive_id: selected, window, date: date ?? '', ...params });
 
     const WINDOWS: ('1h' | '6h' | '24h')[] = ['1h', '6h', '24h'];
 
@@ -284,21 +285,42 @@ export default function AdminSensors({ hives, selected, window, latest, history 
                             <span className="text-xs font-bold text-emerald-700">Live</span>
                         </div>
                     </div>
-                    <div className="flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5">
-                        {WINDOWS.map(w => (
-                            <button
-                                key={w}
-                                onClick={() => navigate({ window: w })}
-                                className={[
-                                    'px-4 py-1.5 text-sm rounded-xl transition-all font-semibold',
-                                    w === window
-                                        ? 'bg-white shadow-sm text-amber-900'
-                                        : 'text-amber-900/60 hover:bg-yellow-200/50',
-                                ].join(' ')}
-                            >
-                                {w}
-                            </button>
-                        ))}
+                    <div className="flex items-center gap-2 flex-wrap">
+                        {/* Date filter */}
+                        <div className="relative flex items-center">
+                            <input
+                                type="date"
+                                value={date ?? ''}
+                                onChange={e => navigate({ date: e.target.value, window })}
+                                className="px-3 py-2 rounded-xl border border-yellow-200 bg-white text-sm font-semibold text-amber-900 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                            />
+                            {date && (
+                                <button
+                                    onClick={() => navigate({ date: '', window })}
+                                    className="absolute right-2 text-amber-900/40 hover:text-amber-900 transition-colors"
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Time window — disabled when date filter is active */}
+                        <div className={`flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5 transition-opacity ${date ? 'opacity-40 pointer-events-none' : ''}`}>
+                            {WINDOWS.map(w => (
+                                <button
+                                    key={w}
+                                    onClick={() => navigate({ window: w, date: '' })}
+                                    className={[
+                                        'px-4 py-1.5 text-sm rounded-xl transition-all font-semibold',
+                                        w === window && !date
+                                            ? 'bg-white shadow-sm text-amber-900'
+                                            : 'text-amber-900/60 hover:bg-yellow-200/50',
+                                    ].join(' ')}
+                                >
+                                    {w}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
