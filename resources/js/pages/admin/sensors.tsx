@@ -293,8 +293,8 @@ export default function AdminSensors({ hives, selected, window, date, latest, hi
                             onChange={d => navigate({ date: d ?? '', window })}
                         />
 
-                        {/* Time window — disabled when date filter is active */}
-                        <div className={`flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5 transition-opacity ${date ? 'opacity-40 pointer-events-none' : ''}`}>
+                        {/* Time window */}
+                        <div className="flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5">
                             {WINDOWS.map(w => (
                                 <button
                                     key={w}

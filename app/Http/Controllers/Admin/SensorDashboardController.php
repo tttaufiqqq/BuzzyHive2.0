@@ -29,7 +29,15 @@ class SensorDashboardController extends Controller
 
         if ($date && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
             $day = Carbon::parse($date);
-            $query->whereBetween('recorded_at', [$day->startOfDay(), $day->copy()->endOfDay()]);
+            $hours = match ($window) {
+                '6h'  => 6,
+                '24h' => 24,
+                default => 1,
+            };
+            $query->whereBetween('recorded_at', [
+                $day->copy()->endOfDay()->subHours($hours),
+                $day->copy()->endOfDay(),
+            ]);
         } else {
             $since = match ($window) {
                 '6h'  => now()->subHours(6),
