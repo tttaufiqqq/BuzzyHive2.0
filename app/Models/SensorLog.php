@@ -10,6 +10,10 @@ class SensorLog extends Model
 {
     const UPDATED_AT = null;
 
+    protected $casts = [
+        'recorded_at' => 'datetime',
+    ];
+
     protected $fillable = [
         'hive_id', 'iot_node_id',
         'temp', 'humidity',
