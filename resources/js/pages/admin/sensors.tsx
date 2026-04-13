@@ -1,5 +1,6 @@
 import { Head, router } from '@inertiajs/react';
-import { Thermometer, Droplets, Flame, ChevronDown, Check, X } from 'lucide-react';
+import { Thermometer, Droplets, Flame, ChevronDown, Check } from 'lucide-react';
+import { DatePicker } from '@/components/core/date-picker';
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
@@ -287,22 +288,10 @@ export default function AdminSensors({ hives, selected, window, date, latest, hi
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                         {/* Date filter */}
-                        <div className="relative flex items-center">
-                            <input
-                                type="date"
-                                value={date ?? ''}
-                                onChange={e => navigate({ date: e.target.value, window })}
-                                className="px-3 py-2 rounded-xl border border-yellow-200 bg-white text-sm font-semibold text-amber-900 focus:outline-none focus:ring-2 focus:ring-yellow-300"
-                            />
-                            {date && (
-                                <button
-                                    onClick={() => navigate({ date: '', window })}
-                                    className="absolute right-2 text-amber-900/40 hover:text-amber-900 transition-colors"
-                                >
-                                    <X className="w-3.5 h-3.5" />
-                                </button>
-                            )}
-                        </div>
+                        <DatePicker
+                            value={date}
+                            onChange={d => navigate({ date: d ?? '', window })}
+                        />
 
                         {/* Time window — disabled when date filter is active */}
                         <div className={`flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5 transition-opacity ${date ? 'opacity-40 pointer-events-none' : ''}`}>
