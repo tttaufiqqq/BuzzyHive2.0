@@ -190,6 +190,17 @@ export default function AdminSensors({ hives, selected, window, latest, history 
 
     const WINDOWS: ('1h' | '6h' | '24h')[] = ['1h', '6h', '24h'];
 
+    // ── Live polling — reload latest + history every 5s, pause when tab hidden
+    useEffect(() => {
+        const tick = () => {
+            if (!document.hidden) {
+                router.reload({ only: ['latest', 'history'] });
+            }
+        };
+        const id = setInterval(tick, 5000);
+        return () => clearInterval(id);
+    }, []);
+
     return (
         <AdminLayout>
             <Head title="Sensor Readings — BuzzyHive 2.0" />
@@ -199,12 +210,21 @@ export default function AdminSensors({ hives, selected, window, latest, history 
                 {/* ── Controls ────────────────────────────────────── */}
                 <div className="flex items-center justify-between flex-wrap gap-3">
 
-                    {/* Hive selector */}
-                    <HiveDropdown
-                        hives={hives}
-                        selected={selected}
-                        onSelect={id => navigate({ hive_id: id })}
-                    />
+                    {/* Hive selector + live badge */}
+                    <div className="flex items-center gap-3">
+                            <HiveDropdown
+                            hives={hives}
+                            selected={selected}
+                            onSelect={id => navigate({ hive_id: id })}
+                        />
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 rounded-xl">
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                            </span>
+                            <span className="text-xs font-bold text-emerald-700">Live</span>
+                        </div>
+                    </div>
 
                     {/* Time window */}
                     <div className="flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5">
