@@ -33,13 +33,25 @@ type Props = {
 
 // ── ArcGauge ────────────────────────────────────────────────────────────
 // Needle drawn pointing right (+x), rotated by -(1-ratio)*180° around pivot.
-// CSS transition on both arc fill and needle rotation for smooth animation.
+// displayValue starts at 0 on mount so the transition plays from zero on load.
 function ArcGauge({ value, max, color }: { value: number; max: number; color: string }) {
+    const [displayValue, setDisplayValue] = useState(0);
+    const mounted = useRef(false);
+
+    useEffect(() => {
+        if (!mounted.current) {
+            mounted.current = true;
+            const t = setTimeout(() => setDisplayValue(value), 80);
+            return () => clearTimeout(t);
+        }
+        setDisplayValue(value);
+    }, [value]);
+
     const cx        = 60;
     const cy        = 58;
     const radius    = 46;
     const arcLength = Math.PI * radius;
-    const ratio     = Math.min(value / max, 1);
+    const ratio     = Math.min(displayValue / max, 1);
     const fill      = ratio * arcLength;
     const rotateDeg = -(1 - ratio) * 180;
 
@@ -78,12 +90,24 @@ function ArcGauge({ value, max, color }: { value: number; max: number; color: st
 
 // ── ProgressBar ──────────────────────────────────────────────────────────
 function ProgressBar({ value, color }: { value: number; color: string }) {
+    const [displayValue, setDisplayValue] = useState(0);
+    const mounted = useRef(false);
+
+    useEffect(() => {
+        if (!mounted.current) {
+            mounted.current = true;
+            const t = setTimeout(() => setDisplayValue(value), 80);
+            return () => clearTimeout(t);
+        }
+        setDisplayValue(value);
+    }, [value]);
+
     return (
         <div className="w-full h-3 bg-amber-100 rounded-full overflow-hidden my-4">
             <div
                 className="h-full rounded-full"
                 style={{
-                    width: `${Math.min(value, 100)}%`,
+                    width: `${Math.min(displayValue, 100)}%`,
                     backgroundColor: color,
                     transition: 'width 0.7s ease-out, background-color 0.4s ease',
                 }}
@@ -128,7 +152,7 @@ const TOOLTIP_STYLE = {
 
 function SensorLine({ data, dataKey }: { data: HistoryPoint[]; dataKey: keyof HistoryPoint }) {
     return (
-        <div className="h-[140px] w-full mt-4">
+        <div className="h-[140px] w-full mt-4 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#FEF3C7" />
