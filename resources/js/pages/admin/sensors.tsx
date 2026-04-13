@@ -1,5 +1,6 @@
 import { Head, router } from '@inertiajs/react';
-import { Thermometer, Droplets, Flame } from 'lucide-react';
+import { Thermometer, Droplets, Flame, ChevronDown, Check } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { Card } from '@/components/core/card';
 import { AdminLayout } from '@/layouts/admin-layout';
@@ -30,30 +31,49 @@ type Props = {
 };
 
 // ── ArcGauge ────────────────────────────────────────────────────────────
-// Semicircular SVG gauge. value and max set fill %. color is the arc stroke color.
+// Semicircular SVG gauge with filled arc + needle.
+// Angle math: ratio 0 = left (180°), ratio 1 = right (0°), sweeping through top (90°).
 function ArcGauge({ value, max, color }: { value: number; max: number; color: string }) {
-    const radius    = 48;
     const cx        = 60;
     const cy        = 58;
-    const arcLength = Math.PI * radius; // semicircle circumference
-    const fill      = Math.min(value / max, 1) * arcLength;
+    const radius    = 46;
+    const arcLength = Math.PI * radius;
+    const ratio     = Math.min(value / max, 1);
+    const fill      = ratio * arcLength;
 
-    // Arc path: left → right along top, using stroke-dasharray to fill progressively
     const d = `M ${cx - radius} ${cy} A ${radius} ${radius} 0 0 1 ${cx + radius} ${cy}`;
 
+    // Needle — points from center toward the arc at the current ratio
+    const angle  = Math.PI * (1 - ratio);
+    const tipX   = cx + 38 * Math.cos(angle);
+    const tipY   = cy - 38 * Math.sin(angle);
+    const tailX  = cx - 7  * Math.cos(angle);
+    const tailY  = cy + 7  * Math.sin(angle);
+
     return (
-        <svg viewBox="0 0 120 65" className="w-full max-w-[160px] mx-auto">
+        <svg viewBox="0 0 120 65" className="w-full max-w-[180px] mx-auto">
             {/* Background arc */}
-            <path d={d} fill="none" stroke="#FEF3C7" strokeWidth="8" strokeLinecap="round" />
-            {/* Foreground arc */}
+            <path d={d} fill="none" stroke="#FEF3C7" strokeWidth="7" strokeLinecap="round" />
+            {/* Filled arc */}
             <path
                 d={d}
                 fill="none"
                 stroke={color}
-                strokeWidth="8"
+                strokeWidth="7"
                 strokeLinecap="round"
                 strokeDasharray={`${fill} ${arcLength}`}
             />
+            {/* Needle */}
+            <line
+                x1={tailX} y1={tailY}
+                x2={tipX}  y2={tipY}
+                stroke="#78350F"
+                strokeWidth="2"
+                strokeLinecap="round"
+            />
+            {/* Pivot dot */}
+            <circle cx={cx} cy={cy} r="4" fill="#78350F" />
+            <circle cx={cx} cy={cy} r="2" fill="#FEF3C7" />
         </svg>
     );
 }
@@ -116,6 +136,53 @@ function SensorLine({ data, dataKey }: { data: HistoryPoint[]; dataKey: keyof Hi
     );
 }
 
+// ── HiveDropdown ─────────────────────────────────────────────────────────
+function HiveDropdown({ hives, selected, onSelect }: {
+    hives:    Hive[];
+    selected: number;
+    onSelect: (id: number) => void;
+}) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+    const selectedHive = hives.find(h => h.id === selected);
+
+    // Close on outside click
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    return (
+        <div ref={ref} className="relative">
+            <button
+                onClick={() => setOpen(o => !o)}
+                className="flex items-center gap-3 px-4 py-2.5 bg-white border border-yellow-200 rounded-xl text-sm font-semibold text-amber-900 hover:bg-yellow-50/50 transition-colors min-w-[180px] justify-between"
+            >
+                <span>{selectedHive?.name ?? 'Select hive'}</span>
+                <ChevronDown className={`w-4 h-4 text-amber-900/40 transition-transform ${open ? 'rotate-180' : ''}`} />
+            </button>
+
+            {open && (
+                <div className="absolute top-full mt-2 left-0 z-20 w-full min-w-[180px] bg-white border border-yellow-100 rounded-2xl shadow-lg overflow-hidden">
+                    {hives.map(h => (
+                        <button
+                            key={h.id}
+                            onClick={() => { onSelect(h.id); setOpen(false); }}
+                            className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-amber-900 hover:bg-yellow-50/60 transition-colors"
+                        >
+                            <span className={h.id === selected ? 'font-bold' : 'font-medium'}>{h.name}</span>
+                            {h.id === selected && <Check className="w-3.5 h-3.5 text-amber-500" />}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ── AdminSensors ─────────────────────────────────────────────────────────
 export default function AdminSensors({ hives, selected, window, latest, history }: Props) {
     const navigate = (params: Record<string, string | number>) =>
@@ -133,15 +200,11 @@ export default function AdminSensors({ hives, selected, window, latest, history 
                 <div className="flex items-center justify-between flex-wrap gap-3">
 
                     {/* Hive selector */}
-                    <select
-                        value={selected}
-                        onChange={e => navigate({ hive_id: Number(e.target.value) })}
-                        className="px-4 py-2 rounded-xl border border-yellow-200 bg-white text-sm font-semibold text-amber-900 focus:outline-none focus:ring-2 focus:ring-yellow-300"
-                    >
-                        {hives.map(h => (
-                            <option key={h.id} value={h.id}>{h.name}</option>
-                        ))}
-                    </select>
+                    <HiveDropdown
+                        hives={hives}
+                        selected={selected}
+                        onSelect={id => navigate({ hive_id: id })}
+                    />
 
                     {/* Time window */}
                     <div className="flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5">
