@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@buzzyhive.com'],
             [
                 'name' => 'Admin',
-                'password' => bcrypt('password'),
+                'password' => bcrypt(env('ADMIN_SEED_PASSWORD', 'BuzzyHive@Admin2025!')),
                 'email_verified_at' => now(),
                 'status' => 'active',
             ]
