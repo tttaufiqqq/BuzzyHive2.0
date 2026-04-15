@@ -1,5 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Bug as Bee, ArrowRight, ShieldCheck, BarChart3, Users, Zap, Globe, Leaf } from 'lucide-react';
+import { ArrowRight, ShieldCheck, BarChart3, Users, Zap, Globe, Leaf } from 'lucide-react';
+import { BeeIcon as Bee } from '@/components/core/bee-icon';
 import { motion } from 'motion/react';
 import React, { useState } from "react";
 import { Button } from '@/components/core/button';

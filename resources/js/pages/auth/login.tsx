@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Bug as Bee, ArrowRight, Lock, Mail } from 'lucide-react';
+import { ArrowRight, Lock, Mail } from 'lucide-react';
+import { BeeIcon as Bee } from '@/components/core/bee-icon';
 import React from 'react';
 import { InputError } from '@/components/core/input-error';
 

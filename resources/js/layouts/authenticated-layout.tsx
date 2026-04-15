@@ -1,7 +1,7 @@
 import { Link, router, usePage } from '@inertiajs/react';
-import { Bug as Bee, LayoutDashboard, Settings, User, LogOut, Home, Users } from 'lucide-react';
-import { motion } from 'motion/react';
+import { LayoutDashboard, Settings, User, LogOut, Home } from 'lucide-react';
 import React from 'react';
+import { BeeIcon } from '@/components/core/bee-icon';
 import { Dropdown } from '@/components/core/dropdown';
 import { cn } from '@/lib/utils';
 
@@ -25,12 +25,17 @@ export function AuthenticatedLayout({ header = null, children }: AuthenticatedLa
     const user = auth.user;
     const isAdmin = user?.role === 'admin';
 
-    const navItems = [
-        { icon: Home,            label: 'Home',      routeName: 'home' },
-        { icon: LayoutDashboard, label: 'Dashboard', routeName: 'dashboard' },
-        ...(isAdmin ? [{ icon: Users, label: 'Admin', routeName: 'admin.dashboard' }] : []),
-        { icon: Settings,        label: 'Settings',  routeName: 'profile.edit' },
-    ];
+    const navItems = isAdmin
+        ? [
+            { icon: Home,            label: 'Home',      routeName: 'home' },
+            { icon: LayoutDashboard, label: 'Admin',     routeName: 'admin.dashboard' },
+            { icon: Settings,        label: 'Settings',  routeName: 'profile.edit' },
+        ]
+        : [
+            { icon: Home,            label: 'Home',      routeName: 'home' },
+            { icon: LayoutDashboard, label: 'My Hives',  routeName: 'dashboard' },
+            { icon: Settings,        label: 'Settings',  routeName: 'profile.edit' },
+        ];
 
     const userMenuItems = [
         { id: 'profile', label: 'My Profile', icon: <User className="w-4 h-4" />,   onClick: () => router.visit(route('profile.edit')) },
@@ -47,7 +52,7 @@ export function AuthenticatedLayout({ header = null, children }: AuthenticatedLa
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2">
                         <div className="bg-yellow-400 p-2 rounded-xl">
-                            <Bee className="w-6 h-6 text-yellow-950" />
+                            <BeeIcon className="w-6 h-6 text-yellow-950" />
                         </div>
                         <h1 className="text-xl font-bold tracking-tight text-amber-900 hidden sm:block">
                             BuzzyHive2.0
@@ -98,19 +103,19 @@ export function AuthenticatedLayout({ header = null, children }: AuthenticatedLa
                             href={route(item.routeName)}
                             className={cn(
                                 'flex flex-col items-center gap-1 transition-colors',
-                                isActive ? 'text-yellow-600' : 'text-amber-900/40'
+                                isActive ? 'text-amber-800' : 'text-amber-900/40'
                             )}
                         >
-                            <div className="relative">
-                                <item.icon className="w-6 h-6" />
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="bottomNav"
-                                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-yellow-600 rounded-full"
-                                    />
-                                )}
+                            <div className={cn(
+                                'rounded-xl p-1.5 transition-colors',
+                                isActive ? 'bg-amber-100' : ''
+                            )}>
+                                <item.icon className="w-5 h-5" />
                             </div>
-                            <span className="text-[10px] font-bold uppercase tracking-widest">
+                            <span className={cn(
+                                'text-[10px]',
+                                isActive ? 'font-semibold' : 'font-medium'
+                            )}>
                                 {item.label}
                             </span>
                         </Link>
