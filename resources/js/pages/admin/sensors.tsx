@@ -141,6 +141,24 @@ function mq2Color(v: number): string {
     return '#10B981';
 }
 
+function statusLabel(color: string): { text: string; textColor: string; dotColor: string } {
+    if (color === '#EF4444') return { text: 'Warning',  textColor: 'text-red-600',     dotColor: 'bg-red-400' };
+    if (color === '#F59E0B') return { text: 'Monitor',  textColor: 'text-amber-600',   dotColor: 'bg-amber-400' };
+    return                          { text: 'Healthy',  textColor: 'text-emerald-600', dotColor: 'bg-emerald-400' };
+}
+
+function StatusBadge({ color }: { color: string }) {
+    const { text, textColor, dotColor } = statusLabel(color);
+    return (
+        <div className="flex justify-center mt-1 mb-2">
+            <span className={`flex items-center gap-1.5 text-xs font-bold ${textColor}`}>
+                <span className={`w-2 h-2 rounded-full ${dotColor}`} />
+                {text}
+            </span>
+        </div>
+    );
+}
+
 // ── Shared LineChart style ────────────────────────────────────────────────
 const AXIS_TICK = { fill: '#78350F', fontSize: 10, fontWeight: 600 };
 const TOOLTIP_STYLE = {
@@ -172,7 +190,7 @@ function SensorLine({ data, dataKey }: { data: HistoryPoint[]; dataKey: keyof Hi
 function SensorHeader({ icon, label, value, iconBg, iconColor }: {
     icon:       React.ReactNode;
     label:      string;
-    value:      string;
+    value?:     string;
     iconBg:     string;
     iconColor:  string;
 }) {
@@ -190,15 +208,17 @@ function SensorHeader({ icon, label, value, iconBg, iconColor }: {
                 </motion.div>
                 <span className="text-xs font-black uppercase tracking-widest text-amber-900/60">{label}</span>
             </div>
-            <motion.span
-                key={value}
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="text-2xl font-black text-amber-950"
-            >
-                {value}
-            </motion.span>
+            {value && (
+                <motion.span
+                    key={value}
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-2xl font-black text-amber-950"
+                >
+                    {value}
+                </motion.span>
+            )}
         </div>
     );
 }
@@ -298,10 +318,10 @@ export default function AdminSensors({ hives, selected, window, date, latest, hi
                             {WINDOWS.map(w => (
                                 <button
                                     key={w}
-                                    onClick={() => navigate({ window: w, date: '' })}
+                                    onClick={() => navigate({ window: w })}
                                     className={[
                                         'px-4 py-1.5 text-sm rounded-xl transition-all font-semibold',
-                                        w === window && !date
+                                        w === window
                                             ? 'bg-white shadow-sm text-amber-900'
                                             : 'text-amber-900/60 hover:bg-yellow-200/50',
                                     ].join(' ')}
@@ -338,6 +358,7 @@ export default function AdminSensors({ hives, selected, window, date, latest, hi
                                     max={45}
                                     color={latest ? tempColor(latest.temperature) : '#FEF3C7'}
                                 />
+                                {latest && <StatusBadge color={tempColor(latest.temperature)} />}
                                 <SensorLine data={history} dataKey="temperature" />
                             </Card>
 
@@ -354,6 +375,7 @@ export default function AdminSensors({ hives, selected, window, date, latest, hi
                                     value={latest?.humidity ?? 0}
                                     color={latest ? humidColor(latest.humidity) : '#FEF3C7'}
                                 />
+                                {latest && <StatusBadge color={humidColor(latest.humidity)} />}
                                 <SensorLine data={history} dataKey="humidity" />
                             </Card>
 
@@ -363,20 +385,20 @@ export default function AdminSensors({ hives, selected, window, date, latest, hi
                         <Card>
                             <SensorHeader
                                 icon={<Flame className="w-4 h-4" />}
-                                label="Gas (MQ2)"
-                                value={latest ? `${latest.mq2} ADC` : '—'}
+                                label="Smoke & Gas"
                                 iconBg="bg-red-50"
                                 iconColor="#EF4444"
                             />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center mt-2">
-                                <div className="flex justify-center">
+                                <div className="flex flex-col items-center">
                                     <ArcGauge
                                         value={latest?.mq2 ?? 0}
                                         max={MQ2_GAUGE_MAX}
                                         color={latest ? mq2Color(latest.mq2) : '#FEF3C7'}
                                     />
+                                    {latest && <StatusBadge color={mq2Color(latest.mq2)} />}
                                 </div>
-                                <SensorLine data={history} dataKey="mq2" />
+                                <SensorLine data={history.map(p => ({ ...p, mq2: Math.round((p.mq2 / MQ2_GAUGE_MAX) * 100) }))} dataKey="mq2" />
                             </div>
                         </Card>
 
