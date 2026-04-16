@@ -13,19 +13,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(MasterDataSeeder::class);
+
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         Role::firstOrCreate(['name' => 'beekeeper', 'guard_name' => 'web']);
 
         $admin = User::firstOrCreate(
-            ['email' => 'admin@buzzyhive.com'],
+            ['email' => 'admin@buzzyhive.urban-alert.com'],
             [
                 'name' => 'Admin',
                 'password' => bcrypt(env('ADMIN_SEED_PASSWORD', 'BuzzyHive@Admin2025!')),
                 'email_verified_at' => now(),
                 'status' => 'active',
+                'role' => 'admin',
             ]
         );
 
         $admin->assignRole($adminRole);
+
+        $this->call([
+            DemoHiveSeeder::class,
+            SensorLogSeeder::class,
+            PredictionSeeder::class,
+            HriSummarySeeder::class,
+            HarvestSeeder::class,
+            InspectionSeeder::class,
+        ]);
     }
 }

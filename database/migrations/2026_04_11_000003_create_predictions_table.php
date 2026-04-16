@@ -12,11 +12,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sensor_log_id')->constrained()->cascadeOnDelete();
             $table->foreignId('hive_id')->constrained()->cascadeOnDelete();
-            $table->enum('label', ['not_ready', 'approaching', 'nearly_ready', 'ready']);
-            $table->float('confidence');
-            $table->timestamp('predicted_at');
+            $table->string('readiness_level', 50);
+            $table->float('hri_value');
+            $table->timestamp('prediction_timestamp');
 
-            $table->index(['hive_id', 'predicted_at']);
+            $table->index(['hive_id', 'prediction_timestamp']);
         });
     }
 

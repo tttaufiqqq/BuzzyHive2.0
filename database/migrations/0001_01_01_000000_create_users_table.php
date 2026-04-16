@@ -25,6 +25,7 @@ return new class extends Migration
             $table->foreignId('invited_by')->nullable()->constrained('users')->nullOnDelete();
             $table->string('telegram_chat_id', 100)->nullable();
             $table->string('status')->default('active');
+            $table->string('role')->default('beekeeper');
             $table->rememberToken();
             $table->timestamps();
         });

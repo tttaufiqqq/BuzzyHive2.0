@@ -11,12 +11,15 @@ return new class extends Migration
         Schema::create('inspections', function (Blueprint $table) {
             $table->id();
             $table->foreignId('hive_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('beekeeper_id')->constrained('users')->cascadeOnDelete();
             $table->text('notes')->nullable();
-            $table->string('flora_type', 100)->nullable();
             $table->string('blooming_status', 100)->nullable();
-            $table->string('weather_observation')->nullable();
-            $table->timestamp('inspected_at');
+            $table->string('vegetation_density')->nullable();
+            $table->string('nectar_source_availability')->nullable();
+            $table->string('structural_damage')->nullable();
+            $table->text('food_source_observation')->nullable();
+            $table->date('inspection_date');
+            $table->timestamps();
         });
     }
 

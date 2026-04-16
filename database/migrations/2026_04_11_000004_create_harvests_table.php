@@ -11,9 +11,12 @@ return new class extends Migration
         Schema::create('harvests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('hive_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('recorded_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('beekeeper_id')->constrained('users')->cascadeOnDelete();
             $table->date('harvest_date');
-            $table->float('yield_ml')->nullable();
+            $table->float('weight');
+            $table->string('productivity_level', 50)->nullable();
+            $table->foreignId('color_id')->nullable()->constrained('master_honey_colors')->nullOnDelete();
+            $table->foreignId('flavor_id')->nullable()->constrained('master_honey_flavors')->nullOnDelete();
             $table->text('notes')->nullable();
             $table->timestamp('created_at')->nullable();
         });

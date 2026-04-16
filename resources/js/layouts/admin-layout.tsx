@@ -30,16 +30,16 @@ return null;
             <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-6">
 
                 {/* ── Top bar: breadcrumb + tabs ── */}
-                <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Admin' }]} />
 
-                    <nav className="flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5" aria-label="Admin">
+                    <nav className="flex gap-1 bg-yellow-100/50 rounded-2xl p-1.5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" aria-label="Admin">
                         {NAV_ITEMS.map((item, index) => (
                             <Link
                                 key={`${toUrl(item.href)}-${index}`}
                                 href={item.href}
                                 className={cn(
-                                    'px-4 py-2 text-sm rounded-xl transition-all whitespace-nowrap',
+                                    'px-4 py-2 text-sm rounded-xl transition-all whitespace-nowrap flex-shrink-0',
                                     isActive(item)
                                         ? 'bg-white shadow-sm font-semibold text-amber-900'
                                         : 'text-amber-900/60 hover:bg-yellow-200/50'

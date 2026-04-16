@@ -100,7 +100,7 @@ export function DatePicker({ value, onChange, className }: DatePickerProps) {
 
             {/* ── Dropdown ── */}
             {open && (
-                <div className="absolute top-full mt-2 right-0 z-30 w-72 bg-white border border-yellow-100 rounded-2xl shadow-lg p-4">
+                <div className="absolute top-full mt-2 left-0 z-30 w-72 bg-white border border-yellow-100 rounded-2xl shadow-lg p-4">
 
                     {/* Month navigation */}
                     <div className="flex items-center justify-between mb-4">

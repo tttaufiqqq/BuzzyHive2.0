@@ -10,9 +10,10 @@ return new class extends Migration
     {
         Schema::create('hives', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('beekeeper_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('site_id')->nullable()->constrained('master_sites')->nullOnDelete();
+            $table->foreignId('species_id')->nullable()->constrained('master_species')->nullOnDelete();
             $table->string('name', 100);
-            $table->string('location')->nullable();
             $table->string('image_path')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();

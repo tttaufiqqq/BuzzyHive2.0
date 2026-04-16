@@ -6,12 +6,12 @@ use App\Models\Hive;
 use App\Models\IotNode;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DemoHiveSeeder extends Seeder
 {
     public function run(): void
     {
-        // Grab the admin user (already seeded)
         $admin = User::where('email', 'admin@buzzyhive.com')->first();
 
         if (!$admin) {
@@ -19,26 +19,41 @@ class DemoHiveSeeder extends Seeder
             return;
         }
 
-        $hive = Hive::firstOrCreate(
-            ['name' => 'Demo Hive 1'],
-            [
-                'user_id'         => $admin->id,
-                'location'        => 'Lab',
-                'colony_strength' => 'moderate',
-                'queen_status'    => 'unknown',
-                'brood_status'    => 'unknown',
-            ]
-        );
+        $site1 = DB::table('master_sites')->where('name', 'Lab')->value('id');
+        $site2 = DB::table('master_sites')->where('name', 'Field A')->value('id');
+        $site3 = DB::table('master_sites')->where('name', 'Field B')->value('id');
 
-        IotNode::firstOrCreate(
-            ['device_id' => 'NODE-001'],
-            [
-                'hive_id'       => $hive->id,
-                'status'        => 'active',
-                'registered_at' => now(),
-            ]
-        );
+        $sp1 = DB::table('master_species')->where('name', 'Trigona itama')->value('id');
+        $sp2 = DB::table('master_species')->where('name', 'Trigona thoracica')->value('id');
+        $sp3 = DB::table('master_species')->where('name', 'Apis mellifera')->value('id');
 
-        $this->command->info("Hive ID: {$hive->id} | NODE-001 registered.");
+        $hivesData = [
+            ['name' => 'Demo Hive 1', 'site_id' => $site1, 'species_id' => $sp1, 'node' => 'NODE-001'],
+            ['name' => 'Demo Hive 2', 'site_id' => $site2, 'species_id' => $sp2, 'node' => 'NODE-002'],
+            ['name' => 'Demo Hive 3', 'site_id' => $site3, 'species_id' => $sp3, 'node' => 'NODE-003'],
+        ];
+
+        foreach ($hivesData as $data) {
+            $hive = Hive::firstOrCreate(
+                ['name' => $data['name']],
+                [
+                    'beekeeper_id' => $admin->id,
+                    'site_id'      => $data['site_id'],
+                    'species_id'   => $data['species_id'],
+                    'status'       => 'active',
+                ]
+            );
+
+            IotNode::firstOrCreate(
+                ['device_id' => $data['node']],
+                [
+                    'hive_id'           => $hive->id,
+                    'device_status'     => 'active',
+                    'installation_date' => now()->subDays(60),
+                ]
+            );
+
+            $this->command->info("Hive: {$hive->name} | Node: {$data['node']}");
+        }
     }
 }

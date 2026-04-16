@@ -398,7 +398,7 @@ export default function AdminSensors({ hives, selected, window, date, latest, hi
                                     />
                                     {latest && <StatusBadge color={mq2Color(latest.mq2)} />}
                                 </div>
-                                <SensorLine data={history.map(p => ({ ...p, mq2: Math.round((p.mq2 / MQ2_GAUGE_MAX) * 100) }))} dataKey="mq2" />
+                                <SensorLine data={history} dataKey="mq2" />
                             </div>
                         </Card>
 
