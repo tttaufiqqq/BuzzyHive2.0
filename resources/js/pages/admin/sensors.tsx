@@ -46,6 +46,7 @@ function ArcGauge({ value, max, color }: { value: number; max: number; color: st
             const t = setTimeout(() => setDisplayValue(value), 80);
             return () => clearTimeout(t);
         }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDisplayValue(value);
     }, [value]);
 
@@ -101,6 +102,7 @@ function ProgressBar({ value, color }: { value: number; color: string }) {
             const t = setTimeout(() => setDisplayValue(value), 80);
             return () => clearTimeout(t);
         }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDisplayValue(value);
     }, [value]);
 

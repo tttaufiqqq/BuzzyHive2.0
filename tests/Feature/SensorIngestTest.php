@@ -15,7 +15,7 @@ beforeEach(function () {
 test('valid sensor data returns 201 and stores sensor log with hri record', function () {
     $user = User::factory()->create();
     $user->assignRole('beekeeper');
-    $hive = Hive::create(['user_id' => $user->id, 'name' => 'Hive A']);
+    $hive = Hive::create(['beekeeper_id' => $user->id, 'name' => 'Hive A']);
     IotNode::create([
         'hive_id'       => $hive->id,
         'device_id'     => 'ESP32-001',
@@ -42,7 +42,7 @@ test('valid sensor data returns 201 and stores sensor log with hri record', func
 test('hri record is linked to its sensor log', function () {
     $user = User::factory()->create();
     $user->assignRole('beekeeper');
-    $hive = Hive::create(['user_id' => $user->id, 'name' => 'Hive B']);
+    $hive = Hive::create(['beekeeper_id' => $user->id, 'name' => 'Hive B']);
     IotNode::create([
         'hive_id'       => $hive->id,
         'device_id'     => 'ESP32-002',
@@ -91,7 +91,7 @@ test('request with wrong api key returns 401', function () {
 
 test('unknown device returns 404', function () {
     $user = User::factory()->create();
-    $hive = Hive::create(['user_id' => $user->id, 'name' => 'Hive C']);
+    $hive = Hive::create(['beekeeper_id' => $user->id, 'name' => 'Hive C']);
 
     $response = $this->postJson('/api/sensor-data', [
         'device_id' => 'UNKNOWN-DEVICE',
