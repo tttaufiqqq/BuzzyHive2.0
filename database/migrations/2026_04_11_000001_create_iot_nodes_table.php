@@ -12,9 +12,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('hive_id')->constrained()->cascadeOnDelete();
             $table->string('device_id')->unique();
-            $table->enum('device_status', ['active', 'inactive'])->default('active');
-            $table->date('installation_date')->nullable();
-            $table->date('last_maintenance_date')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->timestamp('registered_at')->nullable();
             $table->timestamps();
         });
     }
