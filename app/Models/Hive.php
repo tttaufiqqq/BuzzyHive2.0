@@ -10,13 +10,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Hive extends Model
 {
     protected $fillable = [
-        'user_id', 'name', 'location', 'gps_lat', 'gps_lng',
-        'colony_strength', 'queen_status', 'brood_status',
+        'beekeeper_id', 'name', 'site_id', 'species_id',
+        'image_path', 'status',
     ];
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'beekeeper_id');
     }
 
     public function iotNodes(): HasMany
